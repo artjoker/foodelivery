@@ -62,28 +62,46 @@
      * Product list frontend
      */
     $app->get('/products', function () use ($app) {
-      $page   = LIMIT * $app->request->get('p');
+      $page     = LIMIT * $app->request->get('p');
       $query    = "
         SELECT
           SQL_CALC_FOUND_ROWS *,
           (SELECT GROUP_CONCAT(category_name) FROM `categories` WHERE category_id IN (SELECT category_id FROM `lnk_products_categories` WHERE product_id = p.product_id)) AS 'category'
         FROM `products` p
-        LIMIT ".$page.", ".LIMIT."
+        LIMIT " . $page . ", " . LIMIT . "
       ";
       $products = $app->db->getAll($query);
       $app->view->setData(array(
         "title"   => $app->lang->get('Products'),
         "menu"    => "product",
         "content" => $app->view->fetch('products.tpl', array(
-          "app"      => $app,
-          "products" => $products,
+          "app"        => $app,
+          "products"   => $products,
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));
     });
 
+    /**
+     * One product frontend
+     */
     $app->get('/product/:id', function ($id) use ($app) {
-      echo "product $id";
+      $query   = "
+      SELECT
+         *,
+         (SELECT GROUP_CONCAT(category_id) FROM `lnk_products_categories` WHERE product_id = p.product_id) AS 'category'
+      FROM `products` p
+      WHERE p.product_id = '" . $app->db->esc($id) . "'";
+      $product = $app->db->getOne($query);
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Edit') . " " . $product['product_name'],
+        "menu"    => "product",
+        "content" => $app->view->fetch('product.tpl', array(
+          "app"        => $app,
+          "product"    => $product,
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+        )),
+      ));
     });
     $app->get('/filters', function () use ($app) {
       echo "filters";

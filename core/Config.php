@@ -17,7 +17,7 @@
   define('DB_HOST', 'localhost');
   define('DB_USER', 'root');
   define('DB_PASS', '');
-  define('DB_NAME', 'food');
+  define('DB_NAME', 'foodnew');
 
   // email config
   define('MAIL_HOST', 'localhost');
