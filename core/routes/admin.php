@@ -12,8 +12,8 @@
       $query  = "
       SELECT
         SQL_CALC_FOUND_ROWS *
-      FROM `modx_a_order` o
-      JOIN `modx_web_user_attributes` a ON a.internalKey = o.order_client
+      FROM `orders` o
+      #JOIN `modx_web_user_attributes` a ON a.internalKey = o.order_client
       ORDER BY o.order_id DESC
       LIMIT " . $page . ", " . LIMIT;
       $orders = $app->db->getAll($query);
@@ -36,8 +36,8 @@
       $query = "
       SELECT
          *
-      FROM `modx_a_order` o
-      JOIN `modx_web_user_attributes` a ON a.internalKey = o.order_client
+      FROM `orders` o
+      #JOIN `modx_web_user_attributes` a ON a.internalKey = o.order_client
       WHERE o.order_id = '" . $app->db->esc($id) . "'";
       $order = $app->db->getOne($query);
       $app->view->setData(array(
@@ -62,25 +62,26 @@
      * Product list frontend
      */
     $app->get('/products', function () use ($app) {
-
+      $page   = LIMIT * $app->request->get('p');
       $query    = "
-        SELECT SQL_CALC_FOUND_ROWS
-          *,
-          p.product_id AS 'product_id'
-        FROM `modx_a_products` p
-        LEFT JOIN `modx_a_product_strings` ps ON ps.product_id = p.product_id AND ps.translate_lang = '" . LANG . "'
-        WHERE deleted = 0
+        SELECT
+          SQL_CALC_FOUND_ROWS *,
+          (SELECT GROUP_CONCAT(category_name) FROM `categories` WHERE category_id IN (SELECT category_id FROM `lnk_products_categories` WHERE product_id = p.product_id)) AS 'category'
+        FROM `products` p
+        LIMIT ".$page.", ".LIMIT."
       ";
       $products = $app->db->getAll($query);
       $app->view->setData(array(
         "title"   => $app->lang->get('Products'),
-        "menu"    => "order",
+        "menu"    => "product",
         "content" => $app->view->fetch('products.tpl', array(
           "app"      => $app,
           "products" => $products,
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));
     });
+
     $app->get('/product/:id', function ($id) use ($app) {
       echo "product $id";
     });
@@ -106,6 +107,9 @@
       echo "config";
     });
     // new
+    /**
+     * Catalog frontend
+     */
     $app->get('/catalog', function () use ($app) {
       echo "catalog";
     });

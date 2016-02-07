@@ -7,6 +7,10 @@
     <div class="col-md-3">
       <div class="form-group">
         <select name="category" data-active="<?php echo $app->request->get('category')?>" class="form-control nc">
+          <option value="0" selected><?php echo $app->lang->get('All categories')?></option>
+          <?php foreach ($categories as $category): ?>
+          <option value="<?php echo $category['category_id']?>"><?php echo $category['category_name']?></option>
+          <?php endforeach ?>
         </select>
       </div>
     </div>
@@ -28,12 +32,12 @@
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
   <thead>
   <tr>
-    <th width="50px"><?php echo $app->lang->get('ID')?></th>
+    <th width="35px"><?php echo $app->lang->get('ID')?></th>
     <th><?php echo $app->lang->get('Product name')?></th>
     <th><?php echo $app->lang->get('Category')?></th>
     <th width="70px"><?php echo $app->lang->get('Price')?></th>
+    <th width="70px"><?php echo $app->lang->get('Available')?></th>
     <th width="70px"><?php echo $app->lang->get('Status')?></th>
-    <th width="70px"><?php echo $app->lang->get('Availability')?></th>
     <th width="100px"></th>
   </tr>
   </thead>
@@ -58,15 +62,26 @@
       <a href="/admin/product/<?php echo $product['product_id'] ?>" target="_blank"><?php echo $product['product_name'] ?></a>
 
     </td>
-    <td><?php echo $product['product_name']?></td>
-    <td><?php echo $product['product_name']?></td>
-    <td><?php echo $product['product_id']?></td>
-    <td><?php echo $product['product_id']?></td>
+    <td><?php echo $product['category']?></td>
+    <td class="text-right"><?php echo $product['product_price']?></td>
+    <td class="text-center">
+      <?php if ($product['product_visible'] == 0): ?><span class="label label-danger"><?php echo $app->lang->get('No')?></span><?php endif ?>
+      <?php if ($product['product_visible'] == 1): ?><span class="label label-success"><?php echo $app->lang->get('Yes')?></span><?php endif ?>
+    </td>
+    <td class="text-center">
+      <?php if ($product['product_available'] == 0): ?><span class="label label-muted"><?php echo $app->lang->get('Out of stock')?></span><?php endif ?>
+      <?php if ($product['product_available'] == 1): ?><span class="label label-success"><?php echo $app->lang->get('In stock')?></span><?php endif ?>
+      <?php if ($product['product_available'] == 2): ?><span class="label label-danger"><?php echo $app->lang->get('New')?></span><?php endif ?>
+      <?php if ($product['product_available'] == 3): ?><span class="label label-warning"><?php echo $app->lang->get('Sale')?></span><?php endif ?>
+      <?php if ($product['product_available'] == 4): ?><span class="label label-info"><?php echo $app->lang->get('Action')?></span><?php endif ?>
+    </td>
     <td>
-      <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-primary"><span
-                class="glyphicon glyphicon-pencil" title="<?php echo $app->lang->get('Edit')?>"></span></a>
-      <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-danger"><span
-                class="glyphicon glyphicon-remove-sign" title="<?php echo $app->lang->get('Remove')?>"></span></a>
+      <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-primary" title="<?php echo $app->lang->get('Edit')?>">
+        <span class="glyphicon glyphicon-pencil"></span>
+      </a>
+      <a href="/admin/product/<?php echo $product['product_id']?>" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger">
+        <span class="glyphicon glyphicon-remove-sign"></span>
+      </a>
     </td>
   </tr>
   <?php endforeach ?>
