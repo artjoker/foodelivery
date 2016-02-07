@@ -7,16 +7,16 @@
 
   <link href="<?php echo URL_CSS; ?>bootstrap.min.css" rel="stylesheet">
   <link href="<?php echo URL_CSS; ?>bootstrap-theme.min.css" rel="stylesheet">
-  <link href="<?php echo URL_CSS; ?>chosen.min.css" rel="stylesheet">
+  <link href="<?php echo URL_CSS; ?>bootstrap-multiselect.css" rel="stylesheet">
   <link href="<?php echo URL_CSS; ?>datetime.min.css" rel="stylesheet">
-  <link href="<?php echo URL_CSS; ?>switcher.min.css" rel="stylesheet">
+  <link href="<?php echo URL_CSS; ?>bootstrap-switch.min.css" rel="stylesheet">
   <link href="<?php echo URL_CSS; ?>styles.css" rel="stylesheet">
 
 
   <script src="<?php echo URL_JS; ?>jquery-2.2.0.min.js"></script>
   <script src="<?php echo URL_JS; ?>bootstrap.min.js"></script>
-  <script src="<?php echo URL_JS; ?>chosen.jquery.min.js"></script>
-  <script src="<?php echo URL_JS; ?>switcher.min.js"></script>
+  <script src="<?php echo URL_JS; ?>bootstrap-multiselect.min.js"></script>
+  <script src="<?php echo URL_JS; ?>bootstrap-switch.min.js"></script>
   <script src="<?php echo URL_JS; ?>moment-with-locales.min.js"></script>
   <script src="<?php echo URL_JS; ?>datetime.min.js"></script>
 
@@ -33,13 +33,20 @@
           _option = $(this).find("option[value='" + _ids[_i] + "']");
           _option.prop("selected", true);
         }
-        $(this).trigger("liszt:updated");
       });
-      //$("select").not(".nc").chosen();
       $("[title]").tooltip({placement:'bottom'});
-      $('.make-switch').bootstrapSwitch('setOnLabel', '<?php echo $app->lang->get("Yes")?>');
-      $('.make-switch').bootstrapSwitch('setOffLabel', '<?php echo $app->lang->get("No")?>');
-      $('.make-switch').bootstrapSwitch('setSizeClass', 'switch-small');
+      $('.make-switch').bootstrapSwitch({
+        onColor: 'success',
+        offColor: 'danger',
+        onText: '<?php echo $app->lang->get("Yes")?>',
+        offText: '<?php echo $app->lang->get("No")?>',
+        size:'small'
+      });
+      $('[multiple]').multiselect({
+        nonSelectedText: '<?php echo $app->lang->get('Nothing selected')?>',
+        numberDisplayed: 7,
+        buttonWidth:'100%'
+      });
     });
   </script>
 </head>
