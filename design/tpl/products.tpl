@@ -34,7 +34,7 @@
     <th width="70px"><?php echo $app->lang->get('Price')?></th>
     <th width="70px"><?php echo $app->lang->get('Status')?></th>
     <th width="70px"><?php echo $app->lang->get('Availability')?></th>
-    <th width="120px"></th>
+    <th width="100px"></th>
   </tr>
   </thead>
   <tbody>
@@ -44,16 +44,29 @@
       <small class="text-muted"><?php echo $product['product_id']?></small>
     </td>
     <td>
-      <img src="<?php echo $app->image->resize(IMAGE_STORAGE . '/'.$product['product_id'].'/'.$product['product_cover'], array('w'=>32, 'h'=>32,'far'=>1))?>"
-           alt="" class="image-thumbnail"><?php echo $product['product_id']?></td>
-    <td><?php echo $product['product_id']?></td>
+      <img src="<?php echo
+      $app->image->resize(
+        IMAGE_STORAGE . $product['product_id'] . DS . $product['product_cover'],
+        array(
+          'w'   => 32,
+          'h'   => 32,
+          'far' => 1
+          ),
+        'backend'
+      )
+      ?>" alt="<?php echo $product['product_name'] ?>" class="img-thumbnail">
+      <a href="/admin/product/<?php echo $product['product_id'] ?>" target="_blank"><?php echo $product['product_name'] ?></a>
+
+    </td>
+    <td><?php echo $product['product_name']?></td>
+    <td><?php echo $product['product_name']?></td>
     <td><?php echo $product['product_id']?></td>
     <td><?php echo $product['product_id']?></td>
     <td>
-      <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-success"><span
-                class="glyphicon glyphicon-pencil"></span> <b><?php echo $app->lang->get('Edit product')?></b></a>
+      <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-primary"><span
+                class="glyphicon glyphicon-pencil" title="<?php echo $app->lang->get('Edit')?>"></span></a>
       <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-danger"><span
-                class="glyphicon glyphicon-pencil"></span> <b><?php echo $app->lang->get('Remove product')?></b></a>
+                class="glyphicon glyphicon-remove-sign" title="<?php echo $app->lang->get('Remove')?>"></span></a>
     </td>
   </tr>
   <?php endforeach ?>

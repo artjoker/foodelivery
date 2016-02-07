@@ -62,6 +62,7 @@
      * Product list frontend
      */
     $app->get('/products', function () use ($app) {
+
       $query    = "
         SELECT SQL_CALC_FOUND_ROWS
           *,

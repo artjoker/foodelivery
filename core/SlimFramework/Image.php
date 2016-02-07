@@ -14,8 +14,8 @@
     function resize($img, $options, $folder = "", $cache = true)
     {
       $hash = md5($img . serialize($options));
-      if (!file_exists(ROOT . $img) || is_dir(ROOT . $img))
-        $img = PATH_DESIGN . "img/nophoto.png";
+      if (!file_exists($img) || is_dir($img))
+        $img = PATH_DESIGN . "img" . DS . "nophoto.png";
       $ext = "";
 
       $phpThumb = new \phpthumb();
@@ -35,14 +35,14 @@
         $path = IMAGE_CACHE_PATH;
         if (is_array($tree))
           foreach ($tree as $dir) {
-            $mk = $path . "/" . $dir;
+            $mk = $path . DS . $dir;
             if (!file_exists($mk)) {
               mkdir($mk);
               chmod($mk, 0777);
             }
-            $path .= "/" . $dir;
+            $path .= DS . $dir;
           }
-        $folder .= "/";
+        $folder .= DS;
       }
 
       $outputFilename = IMAGE_CACHE_PATH . $folder . $hash . "." . $ext;

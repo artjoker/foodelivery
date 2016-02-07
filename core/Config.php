@@ -1,10 +1,11 @@
 <?php
 
   // filesystem
-  define('PATH_DESIGN', ROOT . "/design/");
-  define('PATH_CORE', ROOT . "/core/");
-  define('PATH_CACHE', ROOT . "/cache/");
-  define('PATH_ROUTE', ROOT . "/core/routes/");
+  define('DS', DIRECTORY_SEPARATOR);
+  define('PATH_DESIGN', ROOT . DS . "design" . DS);
+  define('PATH_CORE', ROOT . DS . "core" . DS);
+  define('PATH_CACHE', ROOT . DS . "cache" . DS);
+  define('PATH_ROUTE', ROOT . DS . "core". DS . "routes" . DS);
 
   // url
   define('URL_ROOT', (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/');
@@ -26,8 +27,8 @@
 
   // images
   define('IMAGE_QUALITY_DEFAULT', 85);
-  define('IMAGE_STORAGE', ROOT . 'data/images/');
-  define('IMAGE_CACHE_PATH', PATH_CACHE . 'images/');
+  define('IMAGE_STORAGE', ROOT . DS . 'data' . DS . 'images' . DS);
+  define('IMAGE_CACHE_PATH', PATH_CACHE . 'images' . DS);
 
   // pagination
   define('LIMIT', 20);
