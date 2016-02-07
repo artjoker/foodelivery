@@ -23,6 +23,7 @@
   <script type="text/javascript">
 
     $(document).ready(function () {
+      $.ajaxSetup({type:'POST', cache: false});
       $('.dt').datetimepicker({locale: '<?php echo LANG; ?>',format: 'DD.MM.YYYY'});
       $('.dt_').datetimepicker({locale: '<?php echo LANG; ?>',pickTime: true});
 
@@ -34,8 +35,8 @@
         }
         $(this).trigger("liszt:updated");
       });
-      $("[title]").tooltip({placement:'bottom'});
       //$("select").not(".nc").chosen();
+      $("[title]").tooltip({placement:'bottom'});
       $('.make-switch').bootstrapSwitch('setOnLabel', '<?php echo $app->lang->get("Yes")?>');
       $('.make-switch').bootstrapSwitch('setOffLabel', '<?php echo $app->lang->get("No")?>');
       $('.make-switch').bootstrapSwitch('setSizeClass', 'switch-small');

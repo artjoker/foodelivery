@@ -20,7 +20,8 @@
     </div>
     <div class="col-md-7">
       <label><?php echo $app->lang->get('Images')?></label>
-      <ul id="images">
+      <div class="clearfix"></div>
+      <ul id="product_images" class="gallery">
 
       </ul>
     </div>
@@ -31,11 +32,23 @@
       </div>
     </div>
   </div>
-
+  <input type="hidden" name="product[id]" value="<?php echo $product['product_id']?>">
+  <input type="hidden" name="product[cover]" id="cover" value="<?php echo $product['product_cover']?>">
   <button type="submit" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-save"></span> <b><?php echo $app->lang->get('Save')?></b></button>
 </form>
 <script src="<?php echo URL_JS; ?>tinymce/tinymce.min.js"></script>
 <script>
+  function getProductImages () {
+    $.ajax({
+      url: '/admin/ajax/product_images',
+      data:{'product_id': <?php echo $product['product_id']?>},
+      success:function(_ajax) {
+        $("#product_images").html(_ajax);
+        $("#product_images [alt='"+$("#cover").val()+"']").parent("li").addClass("cover");
+        $("#product_images [title]").tooltip({placement:'bottom'});
+      }
+    })
+  }
   $(document).ready(function(){
     tinymce.init({
       selector: 'textarea#description',
@@ -43,6 +56,14 @@
       a_plugin_option: true,
       a_configuration_option: 400
     });
+    getProductImages();
 
+    // set product cover
+    $("#product_images").on("click", ".js_product_set_cover", function() {
+      $(".cover").removeClass("cover");
+      var _this = $(this).closest("li");
+      _this.addClass("cover");
+      $("#cover").val(_this.find("img").attr("alt"));
+    })
   })
 </script>

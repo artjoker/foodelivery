@@ -1,7 +1,37 @@
 body {
     background: url(../img/body.jpg);
 }
-
 textarea {
     resize: vertical;
+}
+/* one product gallery */
+.gallery {
+    padding: 0px !important;
+    list-style: none;
+}
+.gallery li {
+    float:left;
+    position: relative;
+    margin-right:5px;
+    margin-bottom:5px;
+}
+.gallery a {
+    display: none;
+}
+.gallery li:hover a {
+    display: block;
+    position: absolute;
+    top:2px;
+}
+.gallery a:first-child {
+    left:2px;
+}
+.gallery a:last-child {
+    right:2px;
+}
+.gallery li.cover a:first-child {
+    display: none!important;
+}
+.cover img {
+    background:#AC1E1E;
 }
