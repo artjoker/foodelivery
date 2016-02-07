@@ -1,0 +1,13 @@
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+AddType video/mp4 .mp4
+Options -Indexes
+RewriteEngine On
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+
+
+
+
