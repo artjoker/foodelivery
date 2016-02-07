@@ -72,7 +72,7 @@
       ";
       $products = $app->db->getAll($query);
       $app->view->setData(array(
-        "title"   => $app->lang->get('Orders'),
+        "title"   => $app->lang->get('Products'),
         "menu"    => "order",
         "content" => $app->view->fetch('products.tpl', array(
           "app"      => $app,
