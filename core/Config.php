@@ -35,6 +35,7 @@
 
   // api config
   define('API_KEY', md5($_SERVER['SERVER_NAME'] . "Artjoker"));
+  define('GMAP_KEY', 'AIzaSyDT3XP98xXW3a8y12c56qVMRPOGGG5dmR8');
 
   // language
   define('LANG', 'en');

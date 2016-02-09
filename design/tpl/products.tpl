@@ -1,7 +1,7 @@
 <form action="/admin/products" method="get">
   <div class="row">
     <div class="col-md-4">
-      <a href="/admin/product/" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
+      <a href="/admin/product/add" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
         <b><?php echo $app->lang->get('Add new product')?></b></a>
     </div>
     <div class="col-md-3">
@@ -17,8 +17,8 @@
 
     <div class="col-md-3 col-xs-12">
       <div class="form-group">
-        <input type="text" name="to" placeholder="<?php echo $app->lang->get('Find by ID or Name')?>"
-               value="<?php echo $app->request->get('word')?>" class="form-control">
+        <input type="text" name="search" placeholder="<?php echo $app->lang->get('Find by ID or Name')?>"
+               value="<?php echo $app->request->get('search')?>" class="form-control">
       </div>
     </div>
     <div class="col-md-2 text-right">

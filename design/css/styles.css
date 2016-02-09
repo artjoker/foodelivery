@@ -23,15 +23,19 @@ textarea {
     position: absolute;
     top:2px;
 }
-.gallery a:first-child {
+.gallery .set_cover {
     left:2px;
 }
-.gallery a:last-child {
+.gallery .delete_image {
     right:2px;
 }
-.gallery li.cover a:first-child {
+.gallery li.cover a {
     display: none!important;
 }
 .cover img {
     background:#AC1E1E;
+}
+/* shops */
+#gmap {
+    min-height: 600px;
 }

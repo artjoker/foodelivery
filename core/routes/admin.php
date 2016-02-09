@@ -62,14 +62,31 @@
      * Product list frontend
      */
     $app->get('/products', function () use ($app) {
-      $page     = LIMIT * $app->request->get('p');
-      $query    = "
+      $page  = LIMIT * $app->request->get('p');
+      $where = array();
+      // filter by category
+      if ($app->request->get('category') > 0)
+        $where[] = " (SELECT COUNT(*) FROM `lnk_products_categories` WHERE category_id = '" . (int)$app->request->get('category') . "' AND product_id = p.product_id) > 0 ";
+      // filter by id or name
+      if ($app->request->get('search') != '')
+        $where[] = " (
+          product_id LIKE '" . $app->db->esc($app->request->get('search')) . "%' OR
+          product_code LIKE '" . $app->db->esc($app->request->get('search')) . "%' OR
+          product_name LIKE '" . $app->db->esc($app->request->get('search')) . "%'
+        ) ";
+      if (count($where) > 0)
+        $where = "WHERE " . implode(" AND ", $where);
+      else
+        $where = "";
+      $query = "
         SELECT
           SQL_CALC_FOUND_ROWS *,
           (SELECT GROUP_CONCAT(category_name) FROM `categories` WHERE category_id IN (SELECT category_id FROM `lnk_products_categories` WHERE product_id = p.product_id)) AS 'category'
         FROM `products` p
+        " . $where . "
         LIMIT " . $page . ", " . LIMIT . "
       ";
+      // TODO pagination
       $products = $app->db->getAll($query);
       $app->view->setData(array(
         "title"   => $app->lang->get('Products'),
@@ -94,7 +111,7 @@
       WHERE p.product_id = '" . $app->db->esc($id) . "'";
       $product = $app->db->getOne($query);
       $app->view->setData(array(
-        "title"   => $app->lang->get('Edit') . " " . $product['product_name'],
+        "title"   => ($id > 0 ? $app->lang->get('Edit') : $app->lang->get('Add new product')) . " " . $product['product_name'],
         "menu"    => "product",
         "content" => $app->view->fetch('product.tpl', array(
           "app"        => $app,
@@ -103,17 +120,46 @@
         )),
       ));
     });
+    /**
+     * Filters frontend
+     */
     $app->get('/filters', function () use ($app) {
-      echo "filters";
+      $query = "
+        SELECT
+          SQL_CALC_FOUND_ROWS * ,
+          (SELECT GROUP_CONCAT(category_name) FROM `categories` WHERE category_id IN (SELECT category_id FROM `lnk_filters_categories` WHERE filter_id = f.filter_id)) AS 'category'
+        FROM `filters` f
+        ORDER BY filter_id DESC";
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Filters'),
+        "menu"    => "filter",
+        "content" => $app->view->fetch('filters.tpl', array(
+          "app"        => $app,
+          "filters"    => $app->db->getAll($query),
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+        )),
+      ));
     });
+    /**
+     * One filter frontend
+     */
     $app->get('/filter/:id', function ($id) use ($app) {
-      echo "filter $id";
-    });
-    $app->get('/feedback', function () use ($app) {
-      echo "feedback";
-    });
-    $app->get('/feedback/:id', function ($id) use ($app) {
-      echo "feedback $id";
+      $query  = "
+      SELECT
+         *,
+         (SELECT GROUP_CONCAT(category_id) FROM `lnk_filters_categories` WHERE filter_id = p.filter_id) AS 'category'
+      FROM `filters` p
+      WHERE p.filter_id = '" . $app->db->esc($id) . "'";
+      $filter = $app->db->getOne($query);
+      $app->view->setData(array(
+        "title"   => ($id > 0 ? $app->lang->get('Edit') : $app->lang->get('Add new filter')) . " " . $filter['filter_name'],
+        "menu"    => "filter",
+        "content" => $app->view->fetch('filter.tpl', array(
+          "app"        => $app,
+          "filter"     => $filter,
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+        )),
+      ));
     });
     $app->get('/banners', function () use ($app) {
       echo "banners";
@@ -129,17 +175,55 @@
      * Catalog frontend
      */
     $app->get('/catalog', function () use ($app) {
-      echo "catalog";
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Catalog'),
+        "menu"    => "content",
+        "content" => $app->view->fetch('catalog.tpl', array(
+          "app"        => $app,
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+        )),
+      ));
     });
-    $app->get('/catalog/:id', function ($id) use ($app) {
-      echo "catalog $id";
+    /**
+     * Catelog backend
+     */
+    $app->post('/catalog', function () use ($app) {
+      if (count($app->request->post('add')) > 0) {
+        $app->db->query("INSERT INTO `categories` SET
+          category_name = '" . $app->db->esc($app->request->post("add")['name']) . "'
+        ");
+        $app->flash("success", $app->lang->get('Category successfully added to catalog'));
+        $app->flashKeep();
+        $app->redirect('/admin/catalog');
+      }
+      if (count($app->request->post('edit')) > 0) {
+        $app->db->query("UPDATE `categories` SET
+          category_name = '" . $app->db->esc($app->request->post("edit")['name']) . "',
+          category_active = '" . (int)$app->request->post("edit")['active'] . "'
+          WHERE category_id = '" . (int)$app->request->post("edit")['id'] . "'
+        ");
+        $app->flash("success", $app->lang->get('Category successfully updated'));
+        $app->flashKeep();
+        $app->redirect('/admin/catalog');
+      }
+
     });
+
     $app->get('/shops', function () use ($app) {
-      echo "shops";
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Shops'),
+        "menu"    => "content",
+        "content" => $app->view->fetch('shops.tpl', array(
+          "app"   => $app,
+          "shops" => $app->db->getAll("SELECT * FROM `shops` ORDER BY shop_name ASC"),
+        )),
+      ));
     });
     $app->get('/shop/:id', function ($id) use ($app) {
       echo "shop $id";
     });
+
+
   });
 
 

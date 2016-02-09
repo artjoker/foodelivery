@@ -40,12 +40,12 @@
         offColor: 'danger',
         onText: '<?php echo $app->lang->get("Yes")?>',
         offText: '<?php echo $app->lang->get("No")?>',
-        size:'small'
+        size: 'small'
       });
       $('[multiple]').multiselect({
         nonSelectedText: '<?php echo $app->lang->get('Nothing selected')?>',
         numberDisplayed: 7,
-        buttonWidth:'100%'
+        buttonWidth: '100%'
       });
     });
   </script>
@@ -70,27 +70,30 @@
 
       <ul class="nav navbar-nav">
         <li class="<?php if ($menu == 'order') echo " active
-        ";?>"><a href="<?php echo URL_ADMIN ?>orders"><span
-                  class="glyphicon glyphicon-shopping-cart"></span> <?php echo $app->lang->get('Orders')?></a></li>
+        ";?>">
+        <a href="<?php echo URL_ADMIN ?>orders"><span
+                  class="glyphicon glyphicon-shopping-cart"></span> <?php echo $app->lang->get('Orders')?></a>
+        </li>
         <li class="<?php if ($menu == 'product') echo " active
-        ";?>"><a href="<?php echo URL_ADMIN ?>products"><span
-                  class="glyphicon glyphicon-briefcase"></span> <?php echo $app->lang->get('Products')?></a></li>
+        ";?>">
+        <a href="<?php echo URL_ADMIN ?>products"><span class="glyphicon glyphicon-briefcase"></span> <?php echo $app->
+          lang->get('Products')?></a></li>
         <li class="<?php if ($menu == 'filter') echo " active
-        ";?>"><a href="<?php echo URL_ADMIN ?>filters"><span
-                  class="glyphicon glyphicon-filter"></span> <?php echo $app->lang->get('Filters')?></a></li>
-        <li class="<?php if ($menu == 'feedback') echo " active
-        ";?>"><a href="<?php echo URL_ADMIN ?>feeadback"><span
-                  class="glyphicon glyphicon-comment"></span> <?php echo $app->lang->get('Feedback')?></a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-             aria-expanded="false"><span class="glyphicon glyphicon-file"></span> <?php echo $app->
-            lang->get('Content')?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="<?php echo URL_ADMIN ?>stores"><?php echo $app->lang->get('Stores')?></a></li>
-            <li><a href="<?php echo URL_ADMIN ?>catalog"><?php echo $app->lang->get('Catalog')?></a></li>
-            <li><a href="<?php echo URL_ADMIN ?>about"><?php echo $app->lang->get('About')?></a></li>
-            <li><a href="<?php echo URL_ADMIN ?>contacts"><?php echo $app->lang->get('Contacts')?></a></li>
-          </ul>
+        ";?>">
+        <a href="<?php echo URL_ADMIN ?>filters"><span class="glyphicon glyphicon-filter"></span> <?php echo $app->
+          lang->get('Filters')?></a></li>
+        <li class="dropdown <?php if ($menu == 'content') echo " active
+        ";?>">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+           aria-expanded="false"><span class="glyphicon glyphicon-file"></span> <?php echo $app->
+          lang->get('Content')?> <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="<?php echo URL_ADMIN ?>catalog"><?php echo $app->lang->get('Catalog')?></a></li>
+          <li><a href="<?php echo URL_ADMIN ?>shops"><?php echo $app->lang->get('Shops')?></a></li>
+          <li><a href="<?php echo URL_ADMIN ?>banners"><?php echo $app->lang->get('Banners')?></a></li>
+          <li><a href="<?php echo URL_ADMIN ?>about"><?php echo $app->lang->get('About')?></a></li>
+          <li><a href="<?php echo URL_ADMIN ?>contacts"><?php echo $app->lang->get('Contacts')?></a></li>
+        </ul>
         </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -116,13 +119,12 @@
   </div><!-- /.container-fluid -->
 </nav>
 <div class="container-fluid">
-  <? if (isset($_GET['w'])): ?>
-  <br>
+  <?php if ('' != $flash['success']): ?>
   <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <strong><?=$messages[$_GET['w']]?></strong>
+    <strong><?php echo $flash['success']?></strong>
   </div>
-  <? endif ?>
+  <?php endif ?>
   <?php echo $content?>
 </div>
 </body>

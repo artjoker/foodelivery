@@ -56,6 +56,7 @@
     </div>
     <div class="col-md-7">
       <label><?php echo $app->lang->get('Images')?></label>
+      <a href="#" class="btn btn-xs pull-right btn-success" id="uploader"><span class="glyphicon glyphicon-picture"></span> <b><?php echo $app->lang->get('Upload images')?></b></a>
       <div class="clearfix"></div>
       <ul id="product_images" class="gallery">
 
@@ -75,6 +76,7 @@
     <b><?php echo $app->lang->get('Save')?></b></button>
 </form>
 <script src="<?php echo URL_JS; ?>tinymce/tinymce.min.js"></script>
+<script src="<?php echo URL_JS; ?>ajaxupload.js"></script>
 <script>
   function getProductImages() {
     $.ajax({
@@ -103,5 +105,38 @@
       _this.addClass("cover");
       $("#cover").val(_this.find("img").attr("alt"));
     })
+
+    // delete image
+    $("#product_images").on("click", ".js_product_image_delete", function () {
+      if (!confirm("<?php echo $app->lang->get('Are you sure?')?>")) return false;
+      var _this = $(this).closest("li");
+      $.ajax({
+        url: '/admin/ajax/delete_image',
+        data:{'product_id': <?php echo $product['product_id']?>, 'image': _this.find("img").attr("alt")},
+        success: function (_ajax) {
+         _this.fadeOut().remove();
+        }
+      })
+    })
+
+    // file uploader
+    new AjaxUpload($("#uploader"), {
+      action: "/admin/ajax/upload",
+      multiple: true,
+      name: "uploader[]",
+      data: {
+        "size"  : 2048576,
+        "folder": '<?php echo (int)$product['product_id'] == 0 ? 'tmp' : $product['product_id']?>'
+      },
+      onSubmit: function(file, ext){
+        if (! (ext && /^(jpg|png|jpeg|JPG|PNG|JPEG)$/.test(ext))){
+          alert('<?php echo $app->lang->get('Invalid format') ?>');
+          return false;
+        }
+      },
+      onComplete: function(file, response){
+        getProductImages();
+      }
+    });
   })
 </script>
