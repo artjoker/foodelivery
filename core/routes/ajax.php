@@ -4,13 +4,13 @@
     //    if (!$app->request->isAjax()) die('Bad AJAX request');
     switch ($get) {
       case "product_images":
-        $images = glob(IMAGE_STORAGE . (int)$app->request->post('product_id') . DS . "*");
+        $images = glob(IMAGE_STORAGE . DS . "products" . DS . (int)$app->request->post('product_id') . DS . "*");
         if (is_array($images))
           foreach ($images as $image)
             $app->render("image.tpl", array("app" => $app, "image" => $image));
         break;
       case "upload":
-        $folder = IMAGE_STORAGE . $app->request->post('folder');
+        $folder = IMAGE_STORAGE . DS . "products" . DS . $app->request->post('folder');
         if (!file_exists($folder)) {
           mkdir($folder);
           chmod($folder, 0777);
@@ -22,7 +22,7 @@
         }
         break;
       case "delete_image":
-        unlink(IMAGE_STORAGE . $app->request->post('product_id') . DS . $app->request->post('image'));
+        unlink(IMAGE_STORAGE . DS . "products" . DS . $app->request->post('product_id') . DS . $app->request->post('image'));
         break;
       case "category":
         echo json_encode($app->db->getOne("SELECT * FROM `categories` WHERE category_id = '".(int)$app->request->post("category_id")."'"));

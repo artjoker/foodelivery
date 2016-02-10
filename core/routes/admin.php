@@ -161,11 +161,22 @@
         )),
       ));
     });
+    /**
+     * Banners frontend
+     */
     $app->get('/banners', function () use ($app) {
-      echo "banners";
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Banners'),
+        "menu"    => "content",
+        "content" => $app->view->fetch('banners.tpl', array(
+          "app"   => $app,
+          "banners" => $app->db->getAll("SELECT * FROM `banners` ORDER BY banner_position ASC"),
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+        )),
+      ));
     });
     $app->get('/banner/:id', function ($id) use ($app) {
-      echo "banner $id";
+
     });
     $app->get('/config', function () use ($app) {
       echo "config";
@@ -185,7 +196,7 @@
       ));
     });
     /**
-     * Catelog backend
+     * Catalog backend
      */
     $app->post('/catalog', function () use ($app) {
       if (count($app->request->post('add')) > 0) {
@@ -208,7 +219,9 @@
       }
 
     });
-
+    /**
+     * Shop frontend
+     */
     $app->get('/shops', function () use ($app) {
       $app->view->setData(array(
         "title"   => $app->lang->get('Shops'),
@@ -219,11 +232,23 @@
         )),
       ));
     });
-    $app->get('/shop/:id', function ($id) use ($app) {
-      echo "shop $id";
+    /**
+     * Shop backend
+     */
+    $app->post('/shops', function () use ($app) {
+      $app->db->query("TRUNCATE TABLE `shops`");
+      foreach ($app->request->post('shop')['name'] as $key => $value)
+        $app->db->query("INSERT INTO `shops` SET
+          shop_name = '" . $app->db->esc($app->request->post('shop')['name'][$key]) . "',
+          shop_addr = '" . $app->db->esc($app->request->post('shop')['addr'][$key]) . "',
+          shop_active = '" . (isset($app->request->post('shop')['active'][$key]) ? 1 : 0) . "',
+          shop_lat = '" . $app->db->esc($app->request->post('shop')['lat'][$key]) . "',
+          shop_lng = '" . $app->db->esc($app->request->post('shop')['lng'][$key]) . "'
+        ");
+
+      $app->flash("success", $app->lang->get('Shop list updated'));
+      $app->redirect('/admin/shops');
     });
-
-
   });
 
 

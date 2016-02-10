@@ -7,33 +7,42 @@
     Google Map here
   </div>
   <div class="panel-footer">
-    <table class="table table-condensed table-bordered">
+    <form action="/admin/shops" method="post">
+      <table class="table table-condensed table-bordered">
       <thead>
       <tr>
-        <th><?php echo $app->lang->get('Name')?></th>
+        <th width="220px"><?php echo $app->lang->get('Name')?></th>
         <th><?php echo $app->lang->get('Address')?></th>
-        <th width="130px"><?php echo $app->lang->get('Lat')?></th>
-        <th width="130px"><?php echo $app->lang->get('Lng')?></th>
+        <th width="140px"><?php echo $app->lang->get('Lat')?></th>
+        <th width="140px"><?php echo $app->lang->get('Lng')?></th>
         <th width="80px"><?php echo $app->lang->get('Active')?></th>
         <th width="100px"></th>
       </tr>
       </thead>
       <tbody>
-        <?php foreach($shops as $shop): ?>
+        <?php
+          $i = 0;
+          foreach($shops as $shop):
+         ?>
         <tr>
-          <td><input type="text" name="shop[<?php echo $shop['shop_id']?>][name]" value="<?php echo $shop['shop_name']?>" class="form-control"></td>
-          <td><input type="text" name="shop[<?php echo $shop['shop_id']?>][addr]" value="<?php echo $shop['shop_addr']?>" class="form-control"></td>
-          <td><input type="text" name="shop[<?php echo $shop['shop_id']?>][lat]" value="<?php echo $shop['shop_lat']?>" class="form-control"></td>
-          <td><input type="text" name="shop[<?php echo $shop['shop_id']?>][lng]" value="<?php echo $shop['shop_lng']?>" class="form-control"></td>
-          <td><input type="checkbox" name="shop[<?php echo $shop['shop_id']?>][active]" value="1" class="make-switch"></td>
+          <td><input type="text" name="shop[name][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_name']?>" class="form-control"></td>
+          <td><input type="text" name="shop[addr][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_addr']?>" class="form-control"></td>
+          <td><input type="text" name="shop[lat][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_lat']?>" class="form-control"></td>
+          <td><input type="text" name="shop[lng][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_lng']?>" class="form-control"></td>
+          <td><input type="checkbox" name="shop[active][<?php echo $shop['shop_id']?>]" <?php echo $shop['shop_active'] == 1 ? "checked" : ""?> value="yes" class="make-switch"></td>
           <td>
             <a href="#" data-show="<?php echo $shop['shop_lat']?>,<?php echo $shop['shop_lng']?>" class="btn btn-info"><span class="glyphicon glyphicon-map-marker"></span></a>
-            <a href="#" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></a>
+            <a href="#" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger" data-marker="<?php echo $i?>"><span class="glyphicon glyphicon-remove-sign"></span></a>
           </td>
         </tr>
-        <?php endforeach ?>
+        <?php
+          $i++;
+          endforeach;
+        ?>
       </tbody>
     </table>
+      <button type="submit" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-save"></span> <b><?php echo $app->lang->get('Save')?></b></button>
+    </form>
   </div>
 </div>
 
@@ -48,8 +57,6 @@
         <dl class="dl-horizontal">
           <dt><kbd>Double click</kbd></dt>
           <dd>Place new marker on map</dd>
-          <dt><kbd>Double click</kbd></dt>
-          <dd>Place new marker on map</dd>
         </dl>
       </div>
     </div>
@@ -59,10 +66,12 @@
         defer></script>
 <script>
   var map,row;
+  var mrk = [];
   function initMap() {
+    coord = $("[data-show]:first").attr("data-show").split(",");
     map = new google.maps.Map(document.getElementById('gmap'), {
-      center: {lat: -34.397, lng: 150.644},
-      zoom: 8
+      center: {lat: parseFloat(coord[0]), lng: parseFloat(coord[1])},
+      zoom: 16
     });
     map.addListener('dblclick', function(e) {
       placeMarkerAndPanTo(e.latLng, map);
@@ -73,16 +82,26 @@
       position: latLng,
       map: map
     });
-//    map.panTo(latLng);
+    // add to markers array
+    mrk.push(new google.maps.Marker({
+      position: latLng,
+      map: map
+    }));
+    // create new row for shop
     $("tbody").append(row.clone());
-    $("tbody tr:last input").val('');
     $("tbody tr:last .bootstrap-switch").remove();
+    $("tbody tr:last input").each(function(){
+      $(this).attr("name", $(this).attr("name").replace(/\[\d\]/g, '[]'));
+      $(this).val('');
+    })
     $("tbody tr:last [data-show]").attr('data-show', latLng.lat()+','+latLng.lng());
     $("tbody tr:last [name*='lat']").val(latLng.lat());
     $("tbody tr:last [name*='lng']").val(latLng.lng());
+    // attach row to marker
+    $("tbody tr:last [data-marker]").attr('data-marker', mrk.length - 1);
+
   }
   $(document).ready(function(){
-    mrk = [];
     row = $("tbody tr:first").clone();
     <?php foreach ($shops as $shop):?>
     mrk.push(new google.maps.Marker({
@@ -95,6 +114,13 @@
       coords = $(this).attr("data-show").split(",");
       map.setCenter({lat: parseFloat(coords[0]), lng: parseFloat(coords[1])});
       map.setZoom(16);
+      return false;
+    })
+    // remove marker on map
+    $("tbody").on("click", "[data-marker]", function(){
+      id = $(this).attr("data-marker");
+      mrk[parseInt(id)].setMap(null);
+      $(this).closest("tr").remove();
       return false;
     })
   })

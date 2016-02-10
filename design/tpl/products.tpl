@@ -50,7 +50,7 @@
     <td>
       <img src="<?php echo
       $app->image->resize(
-        IMAGE_STORAGE . $product['product_id'] . DS . $product['product_cover'],
+        IMAGE_STORAGE . DS ."products" . DS . $product['product_id'] . DS . $product['product_cover'],
         array(
           'w'   => 32,
           'h'   => 32,

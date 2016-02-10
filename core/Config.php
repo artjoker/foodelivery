@@ -27,7 +27,7 @@
 
   // images
   define('IMAGE_QUALITY_DEFAULT', 85);
-  define('IMAGE_STORAGE', ROOT . DS . 'data' . DS . 'images' . DS);
+  define('IMAGE_STORAGE', ROOT . DS . 'data' );
   define('IMAGE_CACHE_PATH', PATH_CACHE . 'images' . DS);
 
   // pagination
@@ -41,4 +41,4 @@
   define('LANG', 'en');
 
   // branding
-  define('BRAND', 'vovkaSlim');
+  define('BRAND', 'Foodelivery');
