@@ -84,24 +84,24 @@
           lang->get('Filters')?></a></li>
         <li class="dropdown <?php if ($menu == 'content') echo " active
         ";?>">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-           aria-expanded="false"><span class="glyphicon glyphicon-file"></span> <?php echo $app->
-          lang->get('Content')?> <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <li><a href="<?php echo URL_ADMIN ?>catalog"><?php echo $app->lang->get('Catalog')?></a></li>
-          <li><a href="<?php echo URL_ADMIN ?>shops"><?php echo $app->lang->get('Shops')?></a></li>
-          <li><a href="<?php echo URL_ADMIN ?>banners"><?php echo $app->lang->get('Banners')?></a></li>
-        </ul>
-        </li>
-        <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+             aria-expanded="false"><span class="glyphicon glyphicon-file"></span> <?php echo $app->
+            lang->get('Content')?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="<?php echo URL_ADMIN ?>catalog"><?php echo $app->lang->get('Catalog')?></a></li>
+            <li><a href="<?php echo URL_ADMIN ?>shops"><?php echo $app->lang->get('Shops')?></a></li>
+            <li><a href="<?php echo URL_ADMIN ?>banners"><?php echo $app->lang->get('Banners')?></a></li>
+          </ul>
+        </li>
+        <li class="dropdown <?php if ($menu == 'users') echo " active ";?>">
+        <a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true"
              aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <?php echo $app->lang->get('Users')?>
             <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="<?php echo URL_ADMIN ?>managers"><span
                         class="glyphicon glyphicon-star"></span> <?php echo $app->lang->get('Managers')?></a></li>
-            <li><a href="<?php echo URL_ADMIN ?>clients"><span
-                        class="glyphicon glyphicon-star-empty"></span> <?php echo $app->lang->get('Clients')?></a></li>
+            <li><a href="<?php echo URL_ADMIN ?>users"><span
+                        class="glyphicon glyphicon-star-empty"></span> <?php echo $app->lang->get('Users')?></a></li>
           </ul>
         </li>
       </ul>
