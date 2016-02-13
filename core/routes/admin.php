@@ -268,6 +268,63 @@
       $app->flash("success", $app->lang->get('Shop list updated'));
       $app->redirect('/admin/shops');
     });
+    /**
+     * Users frontend
+     */
+    $app->get('/users', function () use ($app) {
+      $page   = LIMIT * $app->request->get('p');
+      $query = "
+     SELECT *,
+       (SELECT COUNT(*) FROM `orders` WHERE order_client = user_id) AS 'orders_count'
+     FROM `users`
+     ".($app->request->get('search') != '' ? "
+     WHERE user_firstname LIKE '%".$app->db->esc($app->request->get('search'))."%'
+     OR user_lastname LIKE '%".$app->db->esc($app->request->get('search'))."%'
+     OR user_email LIKE '%".$app->db->esc($app->request->get('search'))."%'
+     OR user_phone LIKE '%".$app->db->esc($app->request->get('search'))."%'" : "")."
+     ORDER BY user_id DESC
+     LIMIT ".$page.", ".LIMIT;
+      // TODO pagination
+      $users = $app->db->getAll($query);
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Users'),
+        "menu"    => "users",
+        "content" => $app->view->fetch('users.tpl', array(
+          "app"   => $app,
+          "users" => $users,
+        )),
+      ));
+    });
+    /**
+     * Single user frontend
+     */
+    $app->get('/users/:id', function ($id) use ($app) {
+      $user = $app->db->getOne(" SELECT * FROM `users` WHERE user_id = '".(int)$id."'");
+      $addr = json_decode($user['user_address'], true);
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Edit user profile'),
+        "menu"    => "users",
+        "content" => $app->view->fetch('user.tpl', array(
+          "app"   => $app,
+          "user" => $user,
+          "addr" => $addr,
+        )),
+      ));
+    });
+    $app->post('/users/:id', function ($id) use ($app) {
+      $user = $app->request->post('user');
+      $app->db->query("UPDATE `users` SET
+     user_firstname = '".$app->db->esc($user['firstname'])."',
+     user_lastname = '".$app->db->esc($user['lastname'])."',
+     user_email = '".$app->db->esc($user['email'])."',
+     user_phone = '".$app->db->esc($user['phone'])."',
+     user_active = '".(isset($user['active']) ? 1 : 0)."',
+     user_address = '".$app->db->esc(json_encode($user['addr']))."'
+     WHERE user_id = '".(int)$id."'
+   ");
+      $app->flash("success", $app->lang->get('User data successfully updated'));
+      $app->redirect('/admin/users');
+    });
   });
 
 

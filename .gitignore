@@ -1,0 +1,6 @@
+.idea/*
+old/*
+api_test.php
+adminer.php
+cache/*
+data/*
