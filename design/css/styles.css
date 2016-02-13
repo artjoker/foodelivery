@@ -39,3 +39,7 @@ textarea {
 #gmap {
     min-height: 600px;
 }
+
+td .thumbnail {
+    margin-bottom:0px;
+}

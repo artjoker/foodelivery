@@ -91,8 +91,6 @@
           <li><a href="<?php echo URL_ADMIN ?>catalog"><?php echo $app->lang->get('Catalog')?></a></li>
           <li><a href="<?php echo URL_ADMIN ?>shops"><?php echo $app->lang->get('Shops')?></a></li>
           <li><a href="<?php echo URL_ADMIN ?>banners"><?php echo $app->lang->get('Banners')?></a></li>
-          <li><a href="<?php echo URL_ADMIN ?>about"><?php echo $app->lang->get('About')?></a></li>
-          <li><a href="<?php echo URL_ADMIN ?>contacts"><?php echo $app->lang->get('Contacts')?></a></li>
         </ul>
         </li>
         <li class="dropdown">
@@ -123,6 +121,12 @@
   <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong><?php echo $flash['success']?></strong>
+  </div>
+  <?php endif ?>
+  <?php if ('' != $flash['error']): ?>
+  <div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong><?php echo $flash['error']?></strong>
   </div>
   <?php endif ?>
   <?php echo $content?>

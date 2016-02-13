@@ -83,10 +83,7 @@
       map: map
     });
     // add to markers array
-    mrk.push(new google.maps.Marker({
-      position: latLng,
-      map: map
-    }));
+    mrk.push(marker);
     // create new row for shop
     $("tbody").append(row.clone());
     $("tbody tr:last .bootstrap-switch").remove();

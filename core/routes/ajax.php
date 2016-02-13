@@ -26,6 +26,17 @@
         break;
       case "category":
         echo json_encode($app->db->getOne("SELECT * FROM `categories` WHERE category_id = '".(int)$app->request->post("category_id")."'"));
+        break;
+      case "update_banner":
+        foreach($app->request->post("banner") as $key => $value)
+          $app->db->query("UPDATE `banners` SET
+            banner_active	= " . (isset($value['active']) ? 1 : 0) . ",
+            banner_position	= '" . (int)$value['position'] . "',
+            banner_link_type =	" . ($value['type'] == 'product' ? 1 : 2) . ",
+            banner_link_id = " . (int)($value['type'] == 'product' ? $value['product'] : $value['category']) . "
+            WHERE banner_id = ".(int)$key."
+          ");
+        break;
     }
 
     $app->stop();

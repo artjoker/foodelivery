@@ -22,8 +22,10 @@
     {
       if (in_array($string, $this->strings))
         $result = $this->strings[$string];
-      else
+      else {
         $result = $string;
+        file_put_contents(PATH_DESIGN . "newlang.csv", $string.",\n", FILE_APPEND);
+      }
       return $result;
     }
   }

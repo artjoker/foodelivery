@@ -169,14 +169,33 @@
         "title"   => $app->lang->get('Banners'),
         "menu"    => "content",
         "content" => $app->view->fetch('banners.tpl', array(
-          "app"   => $app,
-          "banners" => $app->db->getAll("SELECT * FROM `banners` ORDER BY banner_position ASC"),
+          "app"        => $app,
+          "banners"    => $app->db->getAll("SELECT * FROM `banners` ORDER BY banner_position ASC"),
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));
     });
-    $app->get('/banner/:id', function ($id) use ($app) {
-
+    /**
+     * Banners backend
+     */
+    $app->post('/banners', function () use ($app) {
+      // upload image
+      $ext = explode("/", $_FILES['banner']['type']);
+      if (!in_array(end($ext), array("jpeg", "jpg", "png"))) {
+        $app->flash("error", $app->lang->get('Invalid image format (jpg, png only allowed)'));
+        $app->redirect('/admin/banners');
+      }
+      $fileName = uniqid() . '.' . end($ext);
+      move_uploaded_file($_FILES['banner']['tmp_name'], IMAGE_STORAGE . DS . 'banners' . DS . $fileName);
+      $app->db->query("INSERT INTO `banners` SET
+        banner_active	= " . (isset($app->request->post('banner')['active']) ? 1 : 0) . ",
+        banner_image	= '" . $fileName . "',
+        banner_position	= '" . (int)$app->request->post('banner')['position'] . "',
+        banner_link_type =	" . ($app->request->post('banner')['type'] == 'product' ? 1 : 2) . ",
+        banner_link_id = " . ($app->request->post('banner')['type'] == 'product' ? (int)$app->request->post('banner')['product'] : (int)$app->request->post('banner')['category']) . "
+      ");
+      $app->flash("success", $app->lang->get('Banner successfully uploaded'));
+      $app->redirect('/admin/banners');
     });
     $app->get('/config', function () use ($app) {
       echo "config";
