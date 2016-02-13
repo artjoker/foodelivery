@@ -312,6 +312,9 @@
         )),
       ));
     });
+    /**
+     * Single user backend
+     */
     $app->post('/users/:id', function ($id) use ($app) {
       $user = $app->request->post('user');
       $app->db->query("UPDATE `users` SET
