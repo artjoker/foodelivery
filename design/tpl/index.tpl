@@ -90,6 +90,7 @@
           <ul class="dropdown-menu">
             <li><a href="<?php echo URL_ADMIN ?>catalog"><?php echo $app->lang->get('Catalog')?></a></li>
             <li><a href="<?php echo URL_ADMIN ?>shops"><?php echo $app->lang->get('Shops')?></a></li>
+            <li><a href="<?php echo URL_ADMIN ?>delivery"><?php echo $app->lang->get('Delivery')?></a></li>
             <li><a href="<?php echo URL_ADMIN ?>banners"><?php echo $app->lang->get('Banners')?></a></li>
           </ul>
         </li>

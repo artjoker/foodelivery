@@ -127,4 +127,10 @@ Order template,Шаблон заказа
 Order HTML body,HTML содержимое письма заказа
 Item HTML,HTML содержимое письма товара
 Order change template,Шаблон изменения статуса заказа
-Config updated,Настройки обновлены
+Config updated,Настройки обновленыDelivery,
+Delivery,Доставка
+Add new delivery,Добавить способ доставки
+Please sign in,Пожалуйста авторизуйтесь
+Email address,Email
+Sign in,Войти
+Delivery type added successfully ,

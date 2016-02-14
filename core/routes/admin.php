@@ -108,7 +108,6 @@
         )),
       ));
     });
-
     /**
      * One product frontend
      */
@@ -363,7 +362,6 @@
       $app->flash("success", $app->lang->get('User data successfully updated'));
       $app->redirect('/admin/users');
     });
-
     /**
      * Managers frontend
      */
@@ -421,7 +419,31 @@
       $app->flash("success", $app->lang->get('Manager data successfully updated'));
       $app->redirect('/admin/managers');
     });
-
+    /**
+     * Delivery frontend
+     */
+    $app->get('/delivery', function () use ($app) {
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Delivery'),
+        "menu"    => "content",
+        "content" => $app->view->fetch('delivery.tpl', array(
+          "app"      => $app,
+          "delivery" => $app->db->getAll("SELECT * FROM `delivery` ORDER BY delivery_id DESC"),
+        )),
+      ));
+    });
+    /**
+     * Delivery backend
+     */
+    $app->post('/delivery', function () use ($app) {
+      $app->db->query("INSERT INTO `delivery` SET
+            delivery_active	= " . (isset($app->request->post('delivery')['active']) ? 1 : 0) . ",
+            delivery_name	= '" . $app->db->esc($app->request->post('delivery')['name']) . "',
+            delivery_cost =	" . $app->db->esc($app->request->post('delivery')['cost']) . "
+      ");
+      $app->flash("success", $app->lang->get('Delivery type added successfully '));
+      $app->redirect('/admin/delivery');
+    });
 
   });
 

@@ -135,7 +135,6 @@
   $(document).ready(function(){
     $(".js_banner_update").on("click", function(){
       _this = $(this);
-      console.log(decodeURIComponent(_this.closest("tr").find("input,select").serialize()));
       $.ajax({
         url:'/admin/ajax/update_banner',
         data: _this.closest("tr").find("input,select").serialize(),

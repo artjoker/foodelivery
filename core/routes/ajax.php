@@ -37,6 +37,15 @@
             WHERE banner_id = ".(int)$key."
           ");
         break;
+      case "update_delivery":
+        foreach($app->request->post("delivery") as $key => $value)
+          $app->db->query("UPDATE `delivery` SET
+            delivery_active	= " . (isset($value['active']) ? 1 : 0) . ",
+            delivery_name	= '" . $app->db->esc($value['name']) . "',
+            delivery_cost =	" . $app->db->esc($value['cost']) . "
+            WHERE delivery_id = ".(int)$key."
+          ");
+        break;
     }
 
     $app->stop();
