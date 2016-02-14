@@ -311,6 +311,9 @@
         )),
       ));
     });
+    /**
+     * Single user backend
+     */
     $app->post('/users/:id', function ($id) use ($app) {
       $user = $app->request->post('user');
       $app->db->query("UPDATE `users` SET
@@ -325,6 +328,32 @@
       $app->flash("success", $app->lang->get('User data successfully updated'));
       $app->redirect('/admin/users');
     });
+
+    /**
+     * Managers frontend
+     */
+    $app->get('/managers', function () use ($app) {
+      $page   = LIMIT * $app->request->get('p');
+      $query = "
+         SELECT m.*,
+          (SELECT shop_name FROM `shops` WHERE shop_id = m.shop_id) AS 'shop'
+         FROM `managers` m
+         ORDER BY manager_id DESC
+         LIMIT ".$page.", ".LIMIT;
+      // TODO pagination
+      $managers = $app->db->getAll($query);
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Managers'),
+        "menu"    => "users",
+        "content" => $app->view->fetch('managers.tpl', array(
+          "app"   => $app,
+          "managers" => $managers,
+        )),
+      ));
+    });
+
+
+
   });
 
 
