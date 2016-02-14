@@ -127,10 +127,32 @@ Order template,Шаблон заказа
 Order HTML body,HTML содержимое письма заказа
 Item HTML,HTML содержимое письма товара
 Order change template,Шаблон изменения статуса заказа
-Config updated,Настройки обновленыDelivery,
+Config updated,Настройки обновлены
 Delivery,Доставка
 Add new delivery,Добавить способ доставки
 Please sign in,Пожалуйста авторизуйтесь
 Email address,Email
 Sign in,Войти
 Delivery type added successfully ,
+Email templates placeholders,Разъяснение шаблонных плейсхолдеров
+Understand,Ясно
+Customer placeholders,Плейсхолдеры пользователя
+Will be replaced to ,Будет заменено на
+Order placeholders,Плейсхолдеры заказа
+customer firstname,имя пользователя
+customer lastname,фамилию пользователя
+customer email,email пользователя
+customer password,пароль пользователя
+order id,номер заказа
+total order cost,полную стоимость заказа
+order delivery cost,стоимость доставки
+Product placeholders,Плейсхолдеры товара
+resized product image url,уменьшенную ссылку на изображение товара
+product name,название товара
+product code,артикул товара
+product price,цену товара
+order delivery type,
+ordered product list,
+ordered product quantity,
+ordered product cost,
+new order status,
