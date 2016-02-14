@@ -1,2 +1,130 @@
-en,ru,ua
-Hello world,Привет мир,Привiт свiт
+en,ru
+Orders,Заказы
+All,Все
+Deleted,Удален
+New,Новый
+Sent,Отправлен
+Delivered,Доставлен
+Date from,Дата от
+Date to,Дата до
+Apply filter,Фильтровать
+ID,Ид
+Date,Дата
+Client name,Имя клиента
+Client email,Email клиента
+Cost,Стоимость
+Status,Статус
+Order,Заказ
+Payment,Оплата
+Yes,Да
+No,Нет
+Nothing selected,Не выбрано
+Products,Товары
+Filters,Фильтры
+Content,Наполнение
+Catalog,Каталог
+Shops,Магазины
+Banners,Баннеры
+Users,Пользователи
+Managers,Менеджеры
+Config,Настройки
+Exit,Выход
+Add new product,Добавить товар
+All categories,Все категории
+Find by ID or Name,Поиск по Ид или имени
+Product name,Название товара
+Category,Категория
+Price,Цена
+Available,Доступно
+In stock,В наличии
+Edit,Редактировать
+Remove,Удалить
+Name,Имя
+Code,Код
+Must be unique!,Должно быть уникальным
+Out of stock,Нет в наличии
+Sale,Распродажа
+Action,Акция
+Categories,Категории
+Intro,Краткое описание
+Images,Изображения
+Upload images,Загрузить изображение
+Description,Описание
+Save,Сохранить
+Are you sure?,Вы уверены?
+Invalid format,Неверный формат
+Set as cover,Сделать обложкой
+Delete,Удалить
+Add new filter,Добавить фильтр
+Title,Заголовок
+Linked categories,Связанные категории
+Type,Тип
+OR,ИЛИ
+Numeric,Числовой
+AND,И
+Attached to next categories,Связан с категориями
+Add new category,Добавить категорию
+Active,Активный
+Browse products in category,Просмотреть товары в категории
+Cancel,Отмена
+Edit category,Редактировать категорию
+How to use,Как использовать?
+Shop list,Список магазинов
+Address,Адрес
+Lat,Широта
+Lng,Долгота
+Add new banner,Добавить баннер
+Image,Изображение
+Attached,Присоединено
+Position,Позиция
+Product,Товар
+Type single ProductID here,Введите Ид товара
+Not chosen,Не выбран
+Update,Обновить
+Attachment,Присоединенный
+Email,Email
+Attached shop,Присоединенный магазин
+Browse manager orders,Просмотреть заказы менеджера
+Edit manager profile,Редактировать профиль менеджера
+Back,Назад
+Shop,Магазин
+New password,Новый пароль
+Confirm new password,Подтверждение пароля
+Find by Name/Phone/Email,Поиск по Имени/Телефону/Email
+Firstname,Имя
+Lastname,Фамилия
+Phone,Телефон
+Register date,Дата регистрации
+Browse user orders,Просмотреть заказы пользователя
+Edit user profile,Редактировать пользовательский профиль
+Last visit,Последний визит
+Never,Никогда
+Zip,Индекс
+City,Город
+Street,Улица
+House,Дом
+Room,Квартира
+Configuration,Настройки
+General,Общие
+Email templates,Шаблоны писем
+Brand,Бренд
+Modify translate,Изменить переводы
+Language,Язык
+Page limit in backend,Лимит записей на странице
+Google Map API,Google Map API
+Currency,Валюта
+SMTP configuration,Настройки SMTP
+Host,Сервер
+Port,Порт
+User,Логин
+Password,Пароль
+Secure,Безопасность
+Registration template,Шаблон регистрации
+Subject,Тема письма
+HTML body,HTML содержимое письма
+Recovery template,Шаблон восстановления пароля
+Order template,Шаблон заказа
+Order HTML body,HTML содержимое письма заказа
+Item HTML,HTML содержимое письма товара
+Order change template,Шаблон изменения статуса заказа
+Config updated,Настройки обновлены

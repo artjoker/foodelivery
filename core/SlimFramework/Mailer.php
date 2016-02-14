@@ -18,6 +18,7 @@
       $mail->IsSMTP();
       $mail->SMTPDebug = 0;
       $mail->SMTPAuth  = true;
+      if (MAIL_SECURE != '') $mail->SMTPSecure = MAIL_SECURE;
       $mail->Host      = MAIL_HOST;
       $mail->Port      = MAIL_PORT;
       $mail->Username  = MAIL_USER;

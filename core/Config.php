@@ -20,25 +20,25 @@
   define('DB_NAME', 'foodnew');
 
   // email config
-  define('MAIL_HOST', 'localhost');
-  define('MAIL_PORT', 25);
-  define('MAIL_USER', '');
-  define('MAIL_PASS', '');
+  //define('MAIL_HOST', 'localhost');
+  //define('MAIL_PORT', 25);
+  //define('MAIL_USER', '');
+  //define('MAIL_PASS', '');
 
   // images
-  define('IMAGE_QUALITY_DEFAULT', 85);
+  //define('IMAGE_QUALITY_DEFAULT', 85);
   define('IMAGE_STORAGE', ROOT . DS . 'data' );
   define('IMAGE_CACHE_PATH', PATH_CACHE . 'images' . DS);
 
   // pagination
-  define('LIMIT', 20);
+  //define('LIMIT', 20);
 
   // api config
   define('API_KEY', md5($_SERVER['SERVER_NAME'] . "Artjoker"));
-  define('GMAP_KEY', 'AIzaSyDT3XP98xXW3a8y12c56qVMRPOGGG5dmR8');
+  //define('GMAP_KEY', 'AIzaSyDT3XP98xXW3a8y12c56qVMRPOGGG5dmR8');
 
   // language
-  define('LANG', 'en');
+  //define('LANG', 'en');
 
   // branding
-  define('BRAND', 'Foodelivery');
+  //define('BRAND', 'Foodelivery');

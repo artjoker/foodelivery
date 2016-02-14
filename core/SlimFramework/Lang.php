@@ -5,8 +5,9 @@
   class Lang
   {
     var $strings = array();
+    var $unique  = array();
 
-    function __construct()
+    function __construct ()
     {
       $csv     = fopen(PATH_DESIGN . "lang.csv", "r");
       $titles  = array_values(fgetcsv($csv, 4096, ","));
@@ -18,13 +19,16 @@
       fclose($csv);
     }
 
-    function get($string)
+    function get ($string)
     {
-      if (in_array($string, $this->strings))
+      if (in_array($string, array_keys($this->strings)))
         $result = $this->strings[$string];
       else {
         $result = $string;
-        //file_put_contents(PATH_DESIGN . "newlang.csv", $string.",\n", FILE_APPEND);
+        if (!in_array($string, $this->unique)) {
+          $this->unique[] = $string;
+          file_put_contents(PATH_DESIGN . "lang.csv", $string . ",\n", FILE_APPEND);
+        }
       }
       return $result;
     }

@@ -13,8 +13,11 @@
       </div>
       <div class="form-group">
         <label><?php echo $app->lang->get('Price')?></label>
-        <input type="text" name="product[price]" value="<?php echo $product['product_price']?>" required
-               class="form-control">
+        <div class="input-group">
+          <input type="text" name="product[price]" value="<?php echo $product['product_price']?>" required
+                 class="form-control">
+          <span class="input-group-addon"><?php echo CURRENCY?></span>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-6">
@@ -92,7 +95,13 @@
   $(document).ready(function () {
     tinymce.init({
       selector: 'textarea#description',
-      plugin: 'advlist',
+      height: 500,
+      plugins: [
+        'advlist autolink lists link image charmap print preview anchor',
+        'searchreplace visualblocks code fullscreen',
+        'insertdatetime media table contextmenu paste code'
+      ],
+      language: '<?php echo LANG?>',
       a_plugin_option: true,
       a_configuration_option: 400
     });

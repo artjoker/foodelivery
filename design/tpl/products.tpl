@@ -63,7 +63,7 @@
 
     </td>
     <td><?php echo $product['category']?></td>
-    <td class="text-right"><?php echo $product['product_price']?></td>
+    <td class="text-right"><b><?php echo $product['product_price']?></b> <small class="text-muted"><?php echo CURRENCY?></small></td>
     <td class="text-center">
       <?php if ($product['product_visible'] == 0): ?><span class="label label-danger"><?php echo $app->lang->get('No')?></span><?php endif ?>
       <?php if ($product['product_visible'] == 1): ?><span class="label label-success"><?php echo $app->lang->get('Yes')?></span><?php endif ?>

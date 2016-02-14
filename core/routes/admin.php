@@ -1,5 +1,11 @@
 <?php
 
+  $app->hook('slim.before.router', function() use ($app) {
+    $config = $app->db->getAll("SELECT * FROM `config`");
+    foreach($config as $value)
+      define($value['key'], $value['value']);
+  });
+
   require PATH_ROUTE . "auth.php";
 
 
@@ -8,18 +14,23 @@
      * Order list frontend
      */
     $app->get('/orders', function () use ($app) {
-      $page   = LIMIT * $app->request->get('p');
-      $query  = "
+      $page  = LIMIT * $app->request->get('p');
+      $where = array();
+      if ($app->request->get("status") != '') $where[] = 'order_status = "' . (int)$app->request->get('status') . '"';
+      if ($app->request->get("from") != '') $where[] = 'order_created > "' . (int)$app->request->get('from') . '"';
+      if ($app->request->get("to") != '') $where[] = 'order_created < "' . (int)$app->request->get('to') . '"';
+      if ($app->request->get("user") != '') $where[] = 'order_client = "' . (int)$app->request->get('user') . '"';
+      if ($app->request->get("manager") != '') $where[] = 'order_manager = "' . (int)$app->request->get('manager') . '"';
+      $query = "
       SELECT
         SQL_CALC_FOUND_ROWS *
       FROM `orders` o
-      #JOIN `modx_web_user_attributes` a ON a.internalKey = o.order_client
+      " . (count($where) > 0 ? " WHERE " . implode(" AND ", $where) : "") . "
       ORDER BY o.order_id DESC
       LIMIT " . $page . ", " . LIMIT;
       $orders = $app->db->getAll($query);
       $app->db->getOne("SELECT FOUND_ROWS() AS 'cnt'");
       // TODO finish pagination for orders
-      // TODO add filters reaction
       $app->view->setData(array(
         "title"   => $app->lang->get('Orders'),
         "menu"    => "order",
@@ -37,7 +48,6 @@
       SELECT
          *
       FROM `orders` o
-      #JOIN `modx_web_user_attributes` a ON a.internalKey = o.order_client
       WHERE o.order_id = '" . $app->db->esc($id) . "'";
       $order = $app->db->getOne($query);
       $app->view->setData(array(
@@ -197,8 +207,33 @@
       $app->flash("success", $app->lang->get('Banner successfully uploaded'));
       $app->redirect('/admin/banners');
     });
+    /**
+     * Config frontend
+     */
     $app->get('/config', function () use ($app) {
-      echo "config";
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Configuration'),
+        "menu"    => "config",
+        "content" => $app->view->fetch('config.tpl', array(
+          "app"    => $app,
+        )),
+      ));
+    });
+    /**
+     * Config backend
+     */
+    $app->post('/config', function () use ($app) {
+      foreach($app->request->post() as $key => $value) {
+        $query = "INSERT INTO `config` SET
+          `key` = '".strtoupper($key)."',
+          `value` = '".$app->db->esc($value)."'
+        ON DUPLICATE KEY UPDATE
+          `value` = '".$app->db->esc($value)."'
+        ";
+        $app->db->query($query);
+      }
+      $app->flash("success", $app->lang->get('Config updated'));
+      $app->redirect('/admin/config');
     });
     // new
     /**
@@ -272,18 +307,18 @@
      * Users frontend
      */
     $app->get('/users', function () use ($app) {
-      $page   = LIMIT * $app->request->get('p');
+      $page  = LIMIT * $app->request->get('p');
       $query = "
      SELECT *,
        (SELECT COUNT(*) FROM `orders` WHERE order_client = user_id) AS 'orders_count'
      FROM `users`
-     ".($app->request->get('search') != '' ? "
-     WHERE user_firstname LIKE '%".$app->db->esc($app->request->get('search'))."%'
-     OR user_lastname LIKE '%".$app->db->esc($app->request->get('search'))."%'
-     OR user_email LIKE '%".$app->db->esc($app->request->get('search'))."%'
-     OR user_phone LIKE '%".$app->db->esc($app->request->get('search'))."%'" : "")."
+     " . ($app->request->get('search') != '' ? "
+     WHERE user_firstname LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
+     OR user_lastname LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
+     OR user_email LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
+     OR user_phone LIKE '%" . $app->db->esc($app->request->get('search')) . "%'" : "") . "
      ORDER BY user_id DESC
-     LIMIT ".$page.", ".LIMIT;
+     LIMIT " . $page . ", " . LIMIT;
       // TODO pagination
       $users = $app->db->getAll($query);
       $app->view->setData(array(
@@ -299,13 +334,13 @@
      * Single user frontend
      */
     $app->get('/users/:id', function ($id) use ($app) {
-      $user = $app->db->getOne(" SELECT * FROM `users` WHERE user_id = '".(int)$id."'");
+      $user = $app->db->getOne(" SELECT * FROM `users` WHERE user_id = '" . (int)$id . "'");
       $addr = json_decode($user['user_address'], true);
       $app->view->setData(array(
         "title"   => $app->lang->get('Edit user profile'),
         "menu"    => "users",
         "content" => $app->view->fetch('user.tpl', array(
-          "app"   => $app,
+          "app"  => $app,
           "user" => $user,
           "addr" => $addr,
         )),
@@ -317,13 +352,13 @@
     $app->post('/users/:id', function ($id) use ($app) {
       $user = $app->request->post('user');
       $app->db->query("UPDATE `users` SET
-     user_firstname = '".$app->db->esc($user['firstname'])."',
-     user_lastname = '".$app->db->esc($user['lastname'])."',
-     user_email = '".$app->db->esc($user['email'])."',
-     user_phone = '".$app->db->esc($user['phone'])."',
-     user_active = '".(isset($user['active']) ? 1 : 0)."',
-     user_address = '".$app->db->esc(json_encode($user['addr']))."'
-     WHERE user_id = '".(int)$id."'
+     user_firstname = '" . $app->db->esc($user['firstname']) . "',
+     user_lastname = '" . $app->db->esc($user['lastname']) . "',
+     user_email = '" . $app->db->esc($user['email']) . "',
+     user_phone = '" . $app->db->esc($user['phone']) . "',
+     user_active = '" . (isset($user['active']) ? 1 : 0) . "',
+     user_address = '" . $app->db->esc(json_encode($user['addr'])) . "'
+     WHERE user_id = '" . (int)$id . "'
    ");
       $app->flash("success", $app->lang->get('User data successfully updated'));
       $app->redirect('/admin/users');
@@ -333,25 +368,59 @@
      * Managers frontend
      */
     $app->get('/managers', function () use ($app) {
-      $page   = LIMIT * $app->request->get('p');
+      $page  = LIMIT * $app->request->get('p');
       $query = "
          SELECT m.*,
           (SELECT shop_name FROM `shops` WHERE shop_id = m.shop_id) AS 'shop'
          FROM `managers` m
          ORDER BY manager_id DESC
-         LIMIT ".$page.", ".LIMIT;
+         LIMIT " . $page . ", " . LIMIT;
       // TODO pagination
       $managers = $app->db->getAll($query);
       $app->view->setData(array(
         "title"   => $app->lang->get('Managers'),
         "menu"    => "users",
         "content" => $app->view->fetch('managers.tpl', array(
-          "app"   => $app,
+          "app"      => $app,
           "managers" => $managers,
         )),
       ));
     });
-
+    /**
+     * Single manager frontend
+     */
+    $app->get('/manager/:id', function ($id) use ($app) {
+      $app->view->setData(array(
+        "title"   => $app->lang->get('Edit manager profile'),
+        "menu"    => "users",
+        "content" => $app->view->fetch('manager.tpl', array(
+          "app"     => $app,
+          "manager" => $app->db->getOne(" SELECT * FROM `managers` WHERE manager_id = '" . (int)$id . "'"),
+          "shops"   => $app->db->getAll(" SELECT * FROM `shops` ORDER BY shop_id ASC"),
+        )),
+      ));
+    });
+    /**
+     * Single manager backend
+     */
+    $app->post('/manager/:id', function ($id) use ($app) {
+      $user = $app->request->post('manager');
+      if ($user['pass'] == $user['cfm']) $pass = md5($user['pass']);
+      else {
+        $app->flash("error", $app->lang->get('Password mismatch'));
+        $app->redirect('/admin/managers/' . $id);
+      }
+      $app->db->query("UPDATE `managers` SET
+       manager_name = '" . $app->db->esc($user['name']) . "',
+       user_email = '" . $app->db->esc($user['email']) . "',
+       shop_id = '" . (int)$user['shop'] . "',
+       manager_active = '" . (isset($user['active']) ? 1 : 0) . "'
+       " . ($pass != '' ? ", manager_pass = '" . $pass . "'" : "") . "
+       WHERE manager_id = '" . (int)$id . "'
+     ");
+      $app->flash("success", $app->lang->get('Manager data successfully updated'));
+      $app->redirect('/admin/managers');
+    });
 
 
   });
