@@ -46,6 +46,17 @@
             WHERE delivery_id = ".(int)$key."
           ");
         break;
+      case "get_category_products":
+        $products = $app->db->getAll("SELECT * FROM `products` WHERE product_id IN (SELECT product_id FROM `lnk_products_categories` WHERE category_id = '".(int)$app->request->post("category_id")."')");
+        echo ' <option value="0" selected>'.$app->lang->get('Choose product').'</option>';
+        foreach ($products as $product)
+          echo '<option value="'.$product['product_id'].'">'.$product['product_name'].'</option>';
+        break;
+      case "get_product":
+        $product = $app->db->getOne("SELECT product_id, product_name, product_cover, product_price, product_intro FROM `products` WHERE product_id = '".(int)$app->request->post('product_id')."'");
+        $product['product_image'] = $app->image->resize(IMAGE_STORAGE . DS ."products" . DS . $product['product_id'] . DS . $product['product_cover'], array('w' => 64, 'h' => 64, 'far' => 1), 'backend');
+        echo json_encode($product);
+        break;
     }
 
     $app->stop();

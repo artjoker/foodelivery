@@ -66,10 +66,10 @@
     <td>
       <small><?php echo $order['order_created'] ?></small>
     </td>
-    <td><a href="/admin/client/<?php echo $order['internalKey']?>"><?php echo $order['fullname']?></a></td>
-    <td class="text-right"><a href="/admin/client/<?php echo $order['internalKey']?>"><?php echo $order['email']?></a>
+    <td><a href="/admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a></td>
+    <td class="text-right"><a href="/admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
     </td>
-    <td class="text-right"><?php echo $order['order_cost'] ." ".CURRENCY?></td>
+    <td class="text-right"><b><?php echo $order['order_cost']?></b> <small class="text-muted"><?php echo CURRENCY?></small></td>
     <td class="text-center">
       <?php if ($order['order_status'] == 0): ?><span class="label label-default"><?php echo $app->lang->get('Deleted') ?></span><?php endif ?>
       <?php if ($order['order_status'] == 1): ?><span class="label label-danger"><?php echo $app->

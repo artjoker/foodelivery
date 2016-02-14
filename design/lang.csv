@@ -151,8 +151,29 @@ resized product image url,уменьшенную ссылку на изобра�
 product name,название товара
 product code,артикул товара
 product price,цену товара
-order delivery type,
-ordered product list,
-ordered product quantity,
-ordered product cost,
-new order status,
+order delivery type,заказанный тип доставки
+ordered product list,заказанный список товаров
+ordered product quantity,заказанное количество товара
+ordered product cost,стоимость заказанных товаров
+new order status,новый статус заказа
+Details, Детали
+order details,детали заказа
+Client, Клиент
+Manager, Менеджер
+Not paid,Не оплачен
+Paid,Оплачен
+Comment,Комментарий
+Shipping,Доставка
+Delivery type,Тип доставки
+Apartment,Квартира
+Count,Кол-во
+Add another product to order,Добавить другой товар в заказ
+Total,Итого
+Notification,Оповещение
+Send email notification to customer,Отправить email уведомление клиенту
+Update order, Обновить заказ
+You really want to remove product from order?,Вы действительно хотите удалить товар из заказа?Order successfully updated,
+Order successfully updated, Заказ успешно обновлен
+Choose category, Выберите категорию
+Choose product,Выберите товар
+Add,Добавить

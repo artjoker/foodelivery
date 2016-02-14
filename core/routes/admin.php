@@ -1,8 +1,8 @@
 <?php
 
-  $app->hook('slim.before.router', function() use ($app) {
+  $app->hook('slim.before.router', function () use ($app) {
     $config = $app->db->getAll("SELECT * FROM `config`");
-    foreach($config as $value)
+    foreach ($config as $value)
       define($value['key'], $value['value']);
   });
 
@@ -21,10 +21,11 @@
       if ($app->request->get("to") != '') $where[] = 'order_created < "' . (int)$app->request->get('to') . '"';
       if ($app->request->get("user") != '') $where[] = 'order_client = "' . (int)$app->request->get('user') . '"';
       if ($app->request->get("manager") != '') $where[] = 'order_manager = "' . (int)$app->request->get('manager') . '"';
-      $query = "
+      $query  = "
       SELECT
         SQL_CALC_FOUND_ROWS *
       FROM `orders` o
+      JOIN `users` u ON u.user_id = o.order_client
       " . (count($where) > 0 ? " WHERE " . implode(" AND ", $where) : "") . "
       ORDER BY o.order_id DESC
       LIMIT " . $page . ", " . LIMIT;
@@ -48,6 +49,7 @@
       SELECT
          *
       FROM `orders` o
+      JOIN `users` u ON u.user_id = o.order_client
       WHERE o.order_id = '" . $app->db->esc($id) . "'";
       $order = $app->db->getOne($query);
       $app->view->setData(array(
@@ -56,18 +58,44 @@
         "content" => $app->view->fetch('order.tpl', array(
           "app"      => $app,
           "order"    => $order,
-          "delivery" => json_decode($order['order_client'] != '' ? $order['addr'] : $order['order_delivery'], true),
-          "shipping" => $app->db->getAll("SELECT * FROM `modx_a_delivery` ORDER BY delivery_default DESC"),
-          "managers" => $app->db->getAll("SELECT username, id FROM `modx_manager_users` ORDER BY username ASC"),
+          "delivery" => json_decode($order['order_client'] != '' ? $order['user_address'] : $order['order_delivery'], true),
+          "shipping" => $app->db->getAll("SELECT * FROM `delivery` ORDER BY delivery_name DESC"),
+          "managers" => $app->db->getAll("SELECT * FROM `managers` ORDER BY manager_name ASC"),
+          "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
           "products" => $app->db->getAll("
-            SELECT *,
-              (SELECT product_url FROM `modx_a_products` WHERE product_id = o.product_id) AS 'product_url'
-            FROM `modx_a_order_products` o
-            JOIN `modx_a_product_strings` s ON s.product_id = o.product_id AND s.translate_lang = '" . LANG . "'
-            WHERE o.order_id = " . $order['order_id']),
+            SELECT *
+            FROM `products` p
+            JOIN `lnk_order_products` op ON op.product_id = p.product_id
+            WHERE op.order_id = " . $order['order_id']),
         )),
       ));
     });
+    /**
+     * Single order backend
+     */
+    $app->post('/order/:id', function ($id) use ($app) {
+      $app->db->query("UPDATE `orders` SET
+        order_manager = '" . (int)$app->request->post('order')['manager'] . "',
+        order_status = '" . (int)$app->request->post('order')['status'] . "',
+        order_status_pay = '" . (isset($app->request->post('order')['payment']) ? 1 : 0) . "',
+        order_comment = '" . $app->db->esc($app->request->post('order')['comment']) . "',
+        order_delivery = '" . $app->db->esc(json_encode($app->request->post('order')['delivery'])) . "',
+        order_delivery_cost = '" . $app->db->esc($app->request->post('order')['delivery_cost']) . "',
+        order_cost = '" . $app->db->esc($app->request->post('order')['total']) . "'
+        WHERE order_id = '".(int)$id."'
+      ");
+      $app->db->query("DELETE FROM `lnk_order_products` WHERE order_id = '".(int)$id."'");
+      foreach($app->request->post('order')['item']['id'] as $key => $value)
+        $app->db->query("INSERT INTO `lnk_order_products` SET
+          order_id = '".(int)$id."',
+          product_id = '".(int)$value."',
+          product_count = '".$app->db->esc($app->request->post('order')['item']['count'][$key])."',
+          product_price = '".$app->db->esc($app->request->post('order')['item']['price'][$key])."'
+        ");
+      $app->flash("success", $app->lang->get('Order successfully updated'));
+      $app->redirect('/admin/order/'.$id);
+    });
+
     /**
      * Product list frontend
      */
@@ -214,7 +242,7 @@
         "title"   => $app->lang->get('Configuration'),
         "menu"    => "config",
         "content" => $app->view->fetch('config.tpl', array(
-          "app"    => $app,
+          "app" => $app,
         )),
       ));
     });
@@ -222,12 +250,12 @@
      * Config backend
      */
     $app->post('/config', function () use ($app) {
-      foreach($app->request->post() as $key => $value) {
+      foreach ($app->request->post() as $key => $value) {
         $query = "INSERT INTO `config` SET
-          `key` = '".strtoupper($key)."',
-          `value` = '".$app->db->esc($value)."'
+          `key` = '" . strtoupper($key) . "',
+          `value` = '" . $app->db->esc($value) . "'
         ON DUPLICATE KEY UPDATE
-          `value` = '".$app->db->esc($value)."'
+          `value` = '" . $app->db->esc($value) . "'
         ";
         $app->db->query($query);
       }
