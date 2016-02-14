@@ -3,7 +3,7 @@
     <div class="col-md-3 col-xs-6">
       <div class="form-group">
         <input type="text" name="search" placeholder="<?php echo $app->lang->get('Find by Name/Phone/Email')?>"
-               value="<?php echo $app->request->get('search')?>" class="form-control">
+                value="<?php echo $app->request->get('search')?>" class="form-control">
       </div>
     </div>
     <div class="col-md-2">
@@ -49,11 +49,13 @@
     </td>
     <td class="text-center">
       <a href="/admin/users/<?php echo $user['user_id']?>"
-         class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span
+              class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span
                 class="glyphicon glyphicon-pencil"></span></a>
+      <?php if ($user['orders_count'] > 0): ?>
       <a href="/admin/orders?user=<?php echo $user['user_id']?>" class="btn btn-sm btn-info"
-         title="<?php echo $app->lang->get('Browse user orders')?>"><span
-                class="glyphicon glyphicon-shopping-cart"></span> <?php echo $user['orders_count'] > 0 ? $user['orders_count'] : ""?></a>
+              title="<?php echo $app->lang->get('Browse user orders')?>"><span
+                class="glyphicon glyphicon-shopping-cart"></span> <?php echo $user['orders_count']?></a>
+      <?php endif ?>
     </td>
   </tr>
   <?php endforeach ?>

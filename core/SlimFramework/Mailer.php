@@ -6,12 +6,12 @@
   class Mailer
   {
 
-    function __construct()
+    function __construct ()
     {
-      require PATH_CORE . "PHPMailer/class.phpmailer.php";
+      require PATH_CORE . "PHPMailer" . DS . "PHPMailerAutoload.php";
     }
 
-    function send($to, $subject, $body)
+    function send ($to, $subject, $body)
     {
       $mail          = new \PHPMailer();
       $mail->charSet = "UTF-8";
@@ -19,11 +19,11 @@
       $mail->SMTPDebug = 0;
       $mail->SMTPAuth  = true;
       if (MAIL_SECURE != '') $mail->SMTPSecure = MAIL_SECURE;
-      $mail->Host      = MAIL_HOST;
-      $mail->Port      = MAIL_PORT;
-      $mail->Username  = MAIL_USER;
-      $mail->Password  = MAIL_PASS;
-      $mail->Subject   = $subject;
+      $mail->Host     = MAIL_HOST;
+      $mail->Port     = MAIL_PORT;
+      $mail->Username = MAIL_USER;
+      $mail->Password = MAIL_PASS;
+      $mail->Subject  = $subject;
       $mail->SetFrom(MAIL_USER);
 
       $mail->AddAddress($to);

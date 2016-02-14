@@ -67,14 +67,14 @@
             <label><?php echo $app->lang->get('Secure')?></label>
             <br>
             <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active">
-                <input type="radio" name="mail_secure" value="" autocomplete="off" checked> None
+              <label class="btn btn-default  <?php echo MAIL_SECURE == '' ? "active" : "" ?>">
+                <input type="radio" name="mail_secure" value="" autocomplete="off" <?php echo MAIL_SECURE == '' ? "checked" : "" ?>> None
               </label>
-              <label class="btn btn-default">
-                <input type="radio" name="mail_secure" value="ssl" autocomplete="off"> SSL
+              <label class="btn btn-default  <?php echo MAIL_SECURE == 'ssl' ? "active" : "" ?>">
+                <input type="radio" name="mail_secure" value="ssl" autocomplete="off" <?php echo MAIL_SECURE == 'ssl' ? "checked" : "" ?>> SSL
               </label>
-              <label class="btn btn-default">
-                <input type="radio" name="mail_secure" value="tls" autocomplete="off"> TLS
+              <label class="btn btn-default  <?php echo MAIL_SECURE == 'tls' ? "active" : "" ?>">
+                <input type="radio" name="mail_secure" value="tls" autocomplete="off" <?php echo MAIL_SECURE == 'tls' ? "checked" : "" ?>> TLS
               </label>
             </div>
           </div>

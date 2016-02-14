@@ -64,7 +64,7 @@
      * The character set of the message.
      * @type string
      */
-    public $CharSet = 'iso-8859-1';
+    public $CharSet = 'UTF-8';
     /**
      * The MIME Content-type of the message.
      * @type string
@@ -2528,7 +2528,7 @@
     public function getSMTPInstance()
     {
       if (!is_object($this->smtp)) {
-        require ROOT . "/Slim/PHPMailer/class.smtp.php";
+        require PATH_CORE . "PHPMailer" . DS . "class.smtp.php";
         $this->smtp = new \SMTP;
       }
       return $this->smtp;

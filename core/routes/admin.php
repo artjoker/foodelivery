@@ -16,7 +16,7 @@
     $app->get('/orders', function () use ($app) {
       $page  = LIMIT * $app->request->get('p');
       $where = array();
-      if ($app->request->get("status") != '') $where[] = 'order_status = "' . (int)$app->request->get('status') . '"';
+      if ($app->request->get("status") > 0) $where[] = 'order_status = "' . (int)$app->request->get('status') . '"';
       if ($app->request->get("from") != '') $where[] = 'order_created > "' . (int)$app->request->get('from') . '"';
       if ($app->request->get("to") != '') $where[] = 'order_created < "' . (int)$app->request->get('to') . '"';
       if ($app->request->get("user") != '') $where[] = 'order_client = "' . (int)$app->request->get('user') . '"';
@@ -92,6 +92,20 @@
           product_count = '".$app->db->esc($app->request->post('order')['item']['count'][$key])."',
           product_price = '".$app->db->esc($app->request->post('order')['item']['price'][$key])."'
         ");
+      // notify customer
+      if (isset($app->request->post('order')['notify'])) {
+        switch ((int)$app->request->post('order')['status']) {
+          case 0: $status = $app->lang->get("Deleted"); break;
+          case 1: $status = $app->lang->get("New"); break;
+          case 2: $status = $app->lang->get("Sent"); break;
+          case 3: $status = $app->lang->get("Delivered"); break;
+        }
+        $app->mail->send(
+          $app->request->post('order')['notify'],
+          str_replace('{order_id}', $id, EMAIL_SUBJECT_ORDER_CHANGE),
+          strtr(EMAIL_BODY_ORDER_CHANGE, array('{order_id}' => $id, '{order_status}' => $status) )
+        );
+      }
       $app->flash("success", $app->lang->get('Order successfully updated'));
       $app->redirect('/admin/order/'.$id);
     });

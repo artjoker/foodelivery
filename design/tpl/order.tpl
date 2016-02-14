@@ -169,7 +169,7 @@
           lang->get("Notification")?>
         </div>
         <div class="panel-body">
-          <label><input type="checkbox" name="order[notify]" value="yes"/> <?php echo $app->lang->get("Send email notification to customer")?></label>
+          <label><input type="checkbox" name="order[notify]" value="<?php echo $order['user_email']?>"/> <?php echo $app->lang->get("Send email notification to customer")?></label>
         </div>
       </div>
     </div>
