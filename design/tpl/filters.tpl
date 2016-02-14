@@ -1,7 +1,7 @@
 <form action="/admin/filters" method="get">
   <div class="row">
     <div class="col-md-4">
-      <a href="/admin/filter/add" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
+      <a href="/admin/filter/0" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
         <b><?php echo $app->lang->get('Add new filter')?></b>
       </a>
     </div>

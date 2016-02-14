@@ -56,13 +56,13 @@
         "title"   => "# " . $order['order_id'] . " " . $app->lang->get('order details'),
         "menu"    => "order",
         "content" => $app->view->fetch('order.tpl', array(
-          "app"      => $app,
-          "order"    => $order,
-          "delivery" => json_decode($order['order_client'] != '' ? $order['user_address'] : $order['order_delivery'], true),
-          "shipping" => $app->db->getAll("SELECT * FROM `delivery` ORDER BY delivery_name DESC"),
-          "managers" => $app->db->getAll("SELECT * FROM `managers` ORDER BY manager_name ASC"),
+          "app"        => $app,
+          "order"      => $order,
+          "delivery"   => json_decode($order['order_client'] != '' ? $order['user_address'] : $order['order_delivery'], true),
+          "shipping"   => $app->db->getAll("SELECT * FROM `delivery` ORDER BY delivery_name DESC"),
+          "managers"   => $app->db->getAll("SELECT * FROM `managers` ORDER BY manager_name ASC"),
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
-          "products" => $app->db->getAll("
+          "products"   => $app->db->getAll("
             SELECT *
             FROM `products` p
             JOIN `lnk_order_products` op ON op.product_id = p.product_id
@@ -82,40 +82,48 @@
         order_delivery = '" . $app->db->esc(json_encode($app->request->post('order')['delivery'])) . "',
         order_delivery_cost = '" . $app->db->esc($app->request->post('order')['delivery_cost']) . "',
         order_cost = '" . $app->db->esc($app->request->post('order')['total']) . "'
-        WHERE order_id = '".(int)$id."'
+        WHERE order_id = '" . (int)$id . "'
       ");
-      $app->db->query("DELETE FROM `lnk_order_products` WHERE order_id = '".(int)$id."'");
-      foreach($app->request->post('order')['item']['id'] as $key => $value)
+      $app->db->query("DELETE FROM `lnk_order_products` WHERE order_id = '" . (int)$id . "'");
+      foreach ($app->request->post('order')['item']['id'] as $key => $value)
         $app->db->query("INSERT INTO `lnk_order_products` SET
-          order_id = '".(int)$id."',
-          product_id = '".(int)$value."',
-          product_count = '".$app->db->esc($app->request->post('order')['item']['count'][$key])."',
-          product_price = '".$app->db->esc($app->request->post('order')['item']['price'][$key])."'
+          order_id = '" . (int)$id . "',
+          product_id = '" . (int)$value . "',
+          product_count = '" . $app->db->esc($app->request->post('order')['item']['count'][$key]) . "',
+          product_price = '" . $app->db->esc($app->request->post('order')['item']['price'][$key]) . "'
         ");
       // notify customer
       if (isset($app->request->post('order')['notify'])) {
         switch ((int)$app->request->post('order')['status']) {
-          case 0: $status = $app->lang->get("Deleted"); break;
-          case 1: $status = $app->lang->get("New"); break;
-          case 2: $status = $app->lang->get("Sent"); break;
-          case 3: $status = $app->lang->get("Delivered"); break;
+          case 0:
+            $status = $app->lang->get("Deleted");
+            break;
+          case 1:
+            $status = $app->lang->get("New");
+            break;
+          case 2:
+            $status = $app->lang->get("Sent");
+            break;
+          case 3:
+            $status = $app->lang->get("Delivered");
+            break;
         }
         $app->mail->send(
           $app->request->post('order')['notify'],
           str_replace('{order_id}', $id, EMAIL_SUBJECT_ORDER_CHANGE),
-          strtr(EMAIL_BODY_ORDER_CHANGE, array('{order_id}' => $id, '{order_status}' => $status) )
+          strtr(EMAIL_BODY_ORDER_CHANGE, array('{order_id}' => $id, '{order_status}' => $status))
         );
       }
       $app->flash("success", $app->lang->get('Order successfully updated'));
-      $app->redirect('/admin/order/'.$id);
+      $app->redirect('/admin/order/' . $id);
     });
-
     /**
      * Product list frontend
      */
     $app->get('/products', function () use ($app) {
-      $page  = LIMIT * $app->request->get('p');
-      $where = array();
+      $page    = LIMIT * $app->request->get('p');
+      $where   = array();
+      $where[] = " p.product_deleted = 0 ";
       // filter by category
       if ($app->request->get('category') > 0)
         $where[] = " (SELECT COUNT(*) FROM `lnk_products_categories` WHERE category_id = '" . (int)$app->request->get('category') . "' AND product_id = p.product_id) > 0 ";
@@ -167,6 +175,8 @@
         "content" => $app->view->fetch('product.tpl', array(
           "app"        => $app,
           "product"    => $product,
+          "filter"     => $app->db->getAll("SELECT * FROM `filters` "),
+          // TODO доделать вывод фильтров в товаре
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));
@@ -180,6 +190,7 @@
           SQL_CALC_FOUND_ROWS * ,
           (SELECT GROUP_CONCAT(category_name) FROM `categories` WHERE category_id IN (SELECT category_id FROM `lnk_filters_categories` WHERE filter_id = f.filter_id)) AS 'category'
         FROM `filters` f
+        " . ((int)$app->request->get('category') > 0 ? "WHERE filter_id  IN (SELECT filter_id FROM `lnk_filters_categories` WHERE category_id = '" . (int)$app->request->get("category") . "')" : "") . "
         ORDER BY filter_id DESC";
       $app->view->setData(array(
         "title"   => $app->lang->get('Filters'),
@@ -211,6 +222,36 @@
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));
+    });
+    /**
+     * One filter backend
+     */
+    $app->post('/filter/:id', function ($id) use ($app) {
+      if ($id == 0) {
+        $app->db->query("INSERT INTO `filters` SET
+          filter_name = '" . $app->db->esc($app->request->post('filter')['name']) . "',
+          filter_description = '" . $app->db->esc($app->request->post('filter')['description']) . "',
+          filter_type = '" . (int)$app->request->post('filter')['type'] . "'
+        ");
+        $id = $app->db->getID();
+      } else {
+        $app->db->query("UPDATE `filters` SET
+          filter_name = '" . $app->db->esc($app->request->post('filter')['name']) . "',
+          filter_description = '" . $app->db->esc($app->request->post('filter')['description']) . "',
+          filter_type = '" . (int)$app->request->post('filter')['type'] . "'
+          WHERE filter_id = '" . (int)$id . "'
+        ");
+      }
+      $app->db->query("DELETE FROM `lnk_filters_categories` WHERE filter_id = '" . (int)$id . "'");
+      if (isset($app->request->post('filter')['category']))
+        foreach ($app->request->post('filter')['category'] as $item) {
+          $app->db->query("INSERT INTO `lnk_filters_categories` SET
+            filter_id = '" . (int)$id . "',
+            category_id = '" . (int)$item . "'
+            ");
+        }
+      $app->flash("success", $app->lang->get('Filter successfully added'));
+      $app->redirect('/admin/filters');
     });
     /**
      * Banners frontend
