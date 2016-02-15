@@ -169,17 +169,85 @@
       FROM `products` p
       WHERE p.product_id = '" . $app->db->esc($id) . "'";
       $product = $app->db->getOne($query);
+      $filters  = "
+        SELECT
+        *,
+        (SELECT COUNT(*) FROM `lnk_filters_categories` WHERE category_id IN (".$product['category'].")) AS 'linked',
+        (SELECT IF (f.filter_type = 3, string, number) FROM `values` WHERE value_id =
+          (SELECT value_id FROM `lnk_products_values` WHERE filter_id = f.filter_id AND product_id = ".$product['product_id'].")) AS 'value'
+        FROM `filters` f
+        HAVING linked > 0
+      ";
       $app->view->setData(array(
         "title"   => ($id > 0 ? $app->lang->get('Edit') : $app->lang->get('Add new product')) . " " . $product['product_name'],
         "menu"    => "product",
         "content" => $app->view->fetch('product.tpl', array(
           "app"        => $app,
           "product"    => $product,
-          "filter"     => $app->db->getAll("SELECT * FROM `filters` "),
+          "filters"     => $app->db->getAll($filters),
           // TODO доделать вывод фильтров в товаре
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));
+    });
+    /**
+     * One product backend
+     */
+    $app->post('/product/:id', function ($id) use ($app) {
+      if ($id == 0) {
+        $app->db->query("INSERT INTO `products` SET
+          product_name = '".$app->db->esc($app->request->post('product')['name'])."',
+          product_code = '".$app->db->esc($app->request->post('product')['code'])."',
+          product_price = '".$app->db->esc($app->request->post('product')['price'])."',
+          product_visible = '".(isset($app->request->post('product')['available']) ? 1 : 0)."',
+          product_available = '".$app->db->esc($app->request->post('product')['status'])."',
+          product_description = '".$app->db->esc($app->request->post('product')['description'])."',
+          product_intro = '".$app->db->esc($app->request->post('product')['intro'])."',
+          product_cover = '".$app->db->esc($app->request->post('product')['cover'])."'
+        ");
+        $id = $app->db->getID();
+      } else {
+        $id = (int)$id;
+        $app->db->query("UPDATE `products` SET
+          product_name = '".$app->db->esc($app->request->post('product')['name'])."',
+          product_code = '".$app->db->esc($app->request->post('product')['code'])."',
+          product_price = '".$app->db->esc($app->request->post('product')['price'])."',
+          product_visible = '".(isset($app->request->post('product')['available']) ? 1 : 0)."',
+          product_available = '".$app->db->esc($app->request->post('product')['status'])."',
+          product_description = '".$app->db->esc($app->request->post('product')['description'])."',
+          product_intro = '".$app->db->esc($app->request->post('product')['intro'])."',
+          product_cover = '".$app->db->esc($app->request->post('product')['cover'])."'
+          WHERE product_id = '$id'
+        ");
+      }
+      // update categories
+      $app->db->query("DELETE FROM `lnk_products_categories` WHERE product_id = '$id'");
+      if (isset($app->request->post('product')['categories']))
+        foreach ($app->request->post('product')['categories']as $item)
+          $app->db->query("INSERT INTO `lnk_products_categories` SET
+            product_id = '$id',
+            category_id = '".(int)$item."'");
+      var_dump($app->request->post());
+      die;
+      // update filters
+      $app->db->query("DELETE FROM `lnk_products_values` WHERE product_id = '$id'");
+      if (0 < count($app->request->post('filter')))
+        foreach ($app->request->post('filter') as $key => $value){
+          list($type, $fid) = explode("|", $key);
+          switch ($type) {
+            case 1: // Numeric
+            case 3: // AND
+
+              break;
+          }
+          // TODO check value unique
+          // TODO link filter+product+value
+
+          $app->db->query("INSERT INTO `lnk_products_values` SET
+            product_id = '$id',
+            filter_id = '".(int)$value."'");
+
+        }
     });
     /**
      * Filters frontend

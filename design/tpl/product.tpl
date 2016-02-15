@@ -10,7 +10,7 @@
   <br>
 
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="tab_general">
+    <div role="tabpanel" class="tab-pane ac1tive" id="tab_general">
       <div class="row">
         <div class="col-md-5">
           <div class="form-group">
@@ -44,7 +44,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label><?php echo $app->lang->get('Status')?></label>
-                <select name="product[available]" data-active="<?php echo $product['product_available']?>"
+                <select name="product[status]" data-active="<?php echo $product['product_available']?>"
                         class="form-control">
                   <option value="0"><?php echo $app->lang->get('Out of stock')?></option>
                   <option value="1"><?php echo $app->lang->get('In stock')?></option>
@@ -92,19 +92,33 @@
       <table class="table table-condensed table-bordered">
         <thead>
         <tr>
-          <th><?php echo $app->lang->get('Name')?></th>
+          <th width="200px"><?php echo $app->lang->get('Name')?></th>
+          <th width="450px"><?php echo $app->lang->get('Value')?></th>
           <th><?php echo $app->lang->get('Description')?></th>
-          <th><?php echo $app->lang->get('Type')?></th>
-          <th><?php echo $app->lang->get('Value')?></th>
+          <th width="50px"><?php echo $app->lang->get('Type')?></th>
         </tr>
         </thead>
         <tbody>
           <?php foreach($filters as $filter): ?>
           <tr>
-            <td><?php echo $filter['filter_name']?></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <th><?php echo $filter['filter_name']?></th>
+            <td>
+              <?php if ($filter['filter_type'] == 1): ?>
+              <input type="number" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" value="<?php echo $filter['value']?>" class="form-control">
+              <?php endif?>
+              <?php if ($filter['filter_type'] == 2): ?>
+              <input type="checkbox" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" <?php echo ($filter['value'] == 1 ? "checked" : "") ?> value="yes" class="make-switch">
+              <?php endif?>
+              <?php if ($filter['filter_type'] == 3): ?>
+                <input type="text" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" value="<?php echo $filter['value']?>" class="form-control">
+              <?php endif?>
+            </td>
+            <td><small><?php echo $filter['filter_description']?></small></td>
+            <td class="text-center">
+              <?php if ($filter['filter_type'] == 1): ?><span class="label label-info"><?php echo $app->lang->get('Numeric')?></span><?php endif?>
+              <?php if ($filter['filter_type'] == 2): ?><span class="label label-success"><?php echo $app->lang->get('OR')?></span><?php endif?>
+              <?php if ($filter['filter_type'] == 3): ?><span class="label label-danger"><?php echo $app->lang->get('AND')?></span><?php endif?>
+            </td>
           </tr>
           <?php endforeach ?>
         </tbody>
