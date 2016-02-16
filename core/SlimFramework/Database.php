@@ -41,4 +41,9 @@
       return $this->db->insert_id;
     }
 
+    function getAffectedRows()
+    {
+      return $this->db->affected_rows;
+    }
+
   }

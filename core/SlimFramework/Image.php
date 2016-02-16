@@ -51,6 +51,7 @@
         if ($phpThumb->GenerateThumbnail())
           $phpThumb->RenderToFile($outputFilename);
       $res = str_replace(ROOT, "", $outputFilename);
+      $res = str_replace(DS, "/", $res);
       return $res;
     }
   }

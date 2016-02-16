@@ -11,8 +11,15 @@
       require PATH_CORE . "PHPMailer" . DS . "PHPMailerAutoload.php";
     }
 
-    function send ($to, $subject, $body)
+    function send ($to, $subject, $body, $ph = array())
     {
+      // replace ph in body
+      if (0 < count($ph)) {
+        foreach ($ph as $key => $value) {
+          $subject = str_replace("{" . $key . "}", $value, $subject);
+          $body    = str_replace("{" . $key . "}", $value, $body);
+        }
+      }
       $mail          = new \PHPMailer();
       $mail->charSet = "UTF-8";
       $mail->IsSMTP();

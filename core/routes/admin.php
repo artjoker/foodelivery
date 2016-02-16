@@ -459,6 +459,7 @@
       foreach ($app->request->post('shop')['name'] as $key => $value)
         $app->db->query("INSERT INTO `shops` SET
           shop_name = '" . $app->db->esc($app->request->post('shop')['name'][$key]) . "',
+          shop_phone = '" . $app->db->esc($app->request->post('shop')['phone'][$key]) . "',
           shop_addr = '" . $app->db->esc($app->request->post('shop')['addr'][$key]) . "',
           shop_active = '" . (isset($app->request->post('shop')['active'][$key]) ? 1 : 0) . "',
           shop_lat = '" . $app->db->esc($app->request->post('shop')['lat'][$key]) . "',

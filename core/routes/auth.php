@@ -21,6 +21,7 @@
       $app->response->redirect('/admin');
     else {
       // TODO check admin credentials
+      // TODO enter for debug
       $app->render('auth.tpl', array('app' => $app));
       $app->stop();
     }

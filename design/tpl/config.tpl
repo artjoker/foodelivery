@@ -9,7 +9,7 @@
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="home">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 col-sm-6">
           <div class="form-group">
             <label><?php echo $app->lang->get('Brand') ?></label>
             <input type="text" name="brand" value="<?php echo BRAND?>" class="form-control">
@@ -33,7 +33,7 @@
             <input type="text" name="currency" value="<?php echo CURRENCY ?>" class="form-control">
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 col-sm-6">
           <h4><?php echo $app->lang->get('SMTP configuration')?></h4>
           <div class="row">
             <div class="col-md-10">

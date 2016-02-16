@@ -8,13 +8,14 @@
   </div>
   <div class="panel-footer">
     <form action="/admin/shops" method="post">
-      <table class="table table-condensed table-bordered">
+      <table class="table table-condensed table-bordered table-responsive">
       <thead>
       <tr>
         <th width="220px"><?php echo $app->lang->get('Name')?></th>
         <th><?php echo $app->lang->get('Address')?></th>
-        <th width="140px"><?php echo $app->lang->get('Lat')?></th>
-        <th width="140px"><?php echo $app->lang->get('Lng')?></th>
+        <th><?php echo $app->lang->get('Phone')?></th>
+        <th><?php echo $app->lang->get('Lat')?></th>
+        <th><?php echo $app->lang->get('Lng')?></th>
         <th width="80px"><?php echo $app->lang->get('Active')?></th>
         <th width="100px"></th>
       </tr>
@@ -27,6 +28,7 @@
         <tr>
           <td><input type="text" name="shop[name][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_name']?>" class="form-control"></td>
           <td><input type="text" name="shop[addr][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_addr']?>" class="form-control"></td>
+          <td><input type="text" name="shop[phone][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_phone']?>" class="form-control"></td>
           <td><input type="text" name="shop[lat][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_lat']?>" class="form-control"></td>
           <td><input type="text" name="shop[lng][<?php echo $shop['shop_id']?>]" value="<?php echo $shop['shop_lng']?>" class="form-control"></td>
           <td><input type="checkbox" name="shop[active][<?php echo $shop['shop_id']?>]" <?php echo $shop['shop_active'] == 1 ? "checked" : ""?> value="yes" class="make-switch"></td>
