@@ -227,27 +227,42 @@
           $app->db->query("INSERT INTO `lnk_products_categories` SET
             product_id = '$id',
             category_id = '".(int)$item."'");
-      var_dump($app->request->post());
-      die;
       // update filters
       $app->db->query("DELETE FROM `lnk_products_values` WHERE product_id = '$id'");
       if (0 < count($app->request->post('filter')))
         foreach ($app->request->post('filter') as $key => $value){
           list($type, $fid) = explode("|", $key);
-          switch ($type) {
-            case 1: // Numeric
-            case 3: // AND
 
+          switch ((int)$type) {
+            case 1: // Numeric
+              $uniq = $app->db->getOne("SELECT value_id FROM `values` WHERE number = '" . (int)$value . "'");
+              if ($uniq['value_id'] == '') {
+                $app->db->query("INSERT INTO `values` SET number = '" . (int)$value . "'");
+                $vid = $app->db->getID();
+              } else
+                $vid = $uniq['value_id'];
+              break;
+            case 2: // OR
+              $vid = ($value != '' ? 2 : 1);
+              break;
+            case 3: // AND
+              $uniq = $app->db->getOne("SELECT value_id FROM `values` WHERE string = '" . $app->db->esc($value) . "'");
+              if ($uniq['value_id'] == '') {
+                $app->db->query("INSERT INTO `values` SET string = '" . $app->db->esc($value) . "'");
+                $vid = $app->db->getID();
+              } else
+                $vid = $uniq['value_id'];
               break;
           }
-          // TODO check value unique
-          // TODO link filter+product+value
-
           $app->db->query("INSERT INTO `lnk_products_values` SET
             product_id = '$id',
-            filter_id = '".(int)$value."'");
+            value_id = '$vid',
+            filter_id = '".(int)$fid."'
+          ");
 
         }
+      $app->flash("success", $app->lang->get('Product successfully updated'));
+      $app->redirect('/admin/product/' . $id);
     });
     /**
      * Filters frontend

@@ -10,7 +10,7 @@
   <br>
 
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane ac1tive" id="tab_general">
+    <div role="tabpanel" class="tab-pane active" id="tab_general">
       <div class="row">
         <div class="col-md-5">
           <div class="form-group">
@@ -88,7 +88,7 @@
         </div>
       </div>
     </div>
-    <div role="tabpanel" class="tab-pane active" id="tab_filters">
+    <div role="tabpanel" class="tab-pane" id="tab_filters">
       <table class="table table-condensed table-bordered">
         <thead>
         <tr>

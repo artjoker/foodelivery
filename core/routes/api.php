@@ -58,11 +58,13 @@
 
 
 
-
+      $bd = fopen(MODX_BASE_PATH."/assets/files/".$file.".json", "w");
+      fwrite($bd, json_encode($base));
+      fclose($bd);
 
       echo json_encode($response);
       $app->stop();
-      // preapare response
+      // prepare response
       $response = array('response_code' => 0, 'data' => array("path" => "/cache/database.json"));
     }
     if ($request->signature != md5(json_encode($request->data) . API_KEY))
