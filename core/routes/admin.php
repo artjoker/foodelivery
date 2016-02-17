@@ -185,7 +185,6 @@
           "app"        => $app,
           "product"    => $product,
           "filters"     => $app->db->getAll($filters),
-          // TODO доделать вывод фильтров в товаре
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
         )),
       ));

@@ -204,7 +204,6 @@
     /**
      * The default SMTP server port.
      * @type integer
-     * @TODO Why is this needed when the SMTP class takes care of it?
      */
     public $Port = 25;
     /**
@@ -319,7 +318,6 @@
     /**
      * Storage for addresses when SingleTo is enabled.
      * @type array
-     * @TODO This should really not be public
      */
     public $SingleToArray = array();
     /**
@@ -1397,7 +1395,6 @@
           if (!defined('PKCS7_TEXT')) {
             throw new phpmailerException($this->lang('extension_missing') . 'openssl');
           }
-          // @TODO would be nice to use php://temp streams here, but need to wrap for PHP < 5.1
           $file = tempnam(sys_get_temp_dir(), 'mail');
           if (false === file_put_contents($file, $body)) {
             throw new phpmailerException($this->lang('signing') . ' Could not write temp file');
@@ -3663,7 +3660,6 @@
      * @param mixed  $value The value to set the property to
      *
      * @return boolean
-     * @TODO   Should this not be using the __set() magic function?
      */
     public function set($name, $value = '')
     {

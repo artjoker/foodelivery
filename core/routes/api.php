@@ -1,8 +1,17 @@
 <?php
 
   $app->post('/api/', function () use ($app) {
+    date_default_timezone_set('Europe/Kiev');
     $app->response->headers->set('Content-Type', 'application/json');
-    $request  = json_decode(file_get_contents('php://input'));
+    $runtime = time();
+    $debug   = md5($app->request->getUserAgent()) == 'ea6c72a0b8abc2e3d98e34667cc5d7b9';
+    $request = json_decode(file_get_contents('php://input'));
+    if ($debug) {
+      if (!file_exists(PATH_CACHE . 'logs'))
+        mkdir(PATH_CACHE . 'logs');
+      file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', "REQUEST\n" . file_get_contents('php://input') . "\n");
+    }
+
     $response = array();
     /**
      * get_catalog
@@ -214,30 +223,143 @@
          * User profile update
          */
         case "update_user":
-          // TODO update user profile
+          $check_email = $app->db->getOne('
+            SELECT
+            COUNT(*) AS "cnt"
+            FROM `users`
+            WHERE user_email = "' . $app->db->esc($request->data->email) . '"
+            AND user_id != "' . $app->db->esc($request->data->user_id) . '"');
+
+          if ($check_email['cnt'] > 0) {
+            $error = "User with that email already registered";
+          } else {
+            $addr = json_encode(Array(
+              "city"  => $request->data->city,
+              "ave"   => $request->data->street,
+              "house" => $request->data->house_number,
+              "room"  => $request->data->room_number,
+              "index" => $request->data->index,
+            ));
+            $app->db->query("UPDATE `users` SET
+              user_firstname = '" . $app->db->esc($request->data->name) . "',
+              user_lastname = '" . $app->db->esc($request->data->surname) . "',
+              user_phone = '" . $app->db->esc($request->data->phone) . "',
+              user_email = '" . $app->db->esc($request->data->email) . "',
+              user_address = '" . $app->db->esc($addr) . "'
+              WHERE user_id = '" . $app->db->esc($request->data->user_id) . "}'");
+            $response = array("response_code" => 0);
+          }
           break;
         /**
-         * Get product info
+         * Get product info deprecated?
          */
         case "product_info":
-          // TODO Get product info
+          $products = array();
+          foreach ($request->data->products as $value)
+            $products[] = (int)$value['id'];
+          echo "
+            SELECT
+              product_id AS 'id',
+              1 AS 'stock_quantity',
+              product_price AS 'price'
+            FROM `products`
+            WHERE product_id IN (" . implode(",", $products) . ")
+          ";
+          $response['response_code']           = 0;
+          $response['data']['actual_products'] = $app->db->getAll("
+            SELECT
+              product_id AS 'id',
+              1 AS 'stock_quantity',
+              product_price AS 'price'
+            FROM `products`
+            WHERE product_id IN (" . implode(",", $products) . ")
+          ");
           break;
         /**
          * Create new order
          */
         case "order":
-          // TODO Create new order
+          $user = $app->db->getOne($request->data->user_id);
+          // Generate main record of order
+          $app->db->query("
+            INSERT INTO `orders` SET
+            order_created  = NOW(),
+            order_client   = '".$user['user_id']."',
+            order_delivery = '{\"type\": \"".$request->data->delivery_type_id."\"}',
+            order_comment  = '".$app->db->esc(strip_tags($request->data->comment))."'
+          ");
+          // Get order id
+          $order_id = $app->db->getID();
+          $ids = $mail = Array();
+          foreach ($request->data->products as $key => $value)
+            $ids[$value['id']] = $value['count'];
+          // Generate order letter with product list and insert products into database
+          $items = $app->db->getAll("
+            SELECT *
+            FROM `products`
+            WHERE p.product_id IN (".implode(",", array_keys($ids)).") ");
+          foreach ($items as $item) {
+            $item['product_count'] = $ids[$item['product_id']];
+            $item['cart_sum']      = round($item['product_count'] * $item['product_price'], 2);
+            $mail['total']				+= $item['cart_sum'];
+            // TODO сформировать список товаров для письма
+            //$mail['items'] .= $app->view->fetch("mail_order_item", $item);
+            $app->db->query("
+              INSERT INTO `lnk_order_products` SET
+              order_id      = '$order_id',
+              product_id    = '".$item['product_id']."',
+              product_count = '".$item['product_count']."',
+              product_price = '".$item['product_price']."'
+            ");
+          }
+          //$delivery = $app->db->getOne("SELECT * FROM `modx_a_delivery` WHERE delivery_id = ".$request->data->delivery_type_id);
+          //$mail['total']        += $delivery['delivery_cost'];
+          //$mail['delivery_cost'] = $delivery['delivery_cost'];
+          //$mail['currency']      = CURRENCY;
+          //$modx->db->query("UPDATE `modx_a_order` SET order_cost = '{$mail[total]}' WHERE order_id = '$order_id'");
+          //$mail['items'] = $modx->parseDocumentSource($mail['items']);
+          //// Send letters to admin and client
+          //$shop->sendMail($user['email'], "order", $mail);
+          //$shop->sendMail($modx->config['emailsender'], "order", $mail);
+          //$response['response_code'] = 0;
           break;
         /**
          * User order history
          */
         case "history":
-          // TODO User order history
+          $orders = $app->db->getAll("SELECT * FROM `orders` WHERE order_client = ".(int)$request->data->user_id);
+          foreach ($orders as $order) {
+            switch ($order['order_status']) {
+              case 0: $status = $app->lang->get('Deleted'); break;
+              case 1: $status = $app->lang->get('New'); break;
+              case 2: $status = $app->lang->get('Sent'); break;
+              case 3: $status = $app->lang->get('Delivered'); break;
+            }
+            $o = array(
+              "date"     => strtotime($order['order_created']),
+              "price"    => $order['order_cost'],
+              "currency" => "UAH",
+              "status"   => $status
+            );
+            $o['products'] = $app->db->getAll("
+              SELECT
+                product_id AS 'id',
+                product_count AS 'count'
+              FROM `lnk_order_products`
+              WHERE order_id = ".$order['order_id']);
+
+            $response['data']['history_orders'][] = $o;
+          }
+          $response['response_code'] = 0;
           break;
       }
     // prepare response output
     if (!empty($error))
       $response = array("response_code" => 100, "data" => array("error" => $error));
+    if ($debug) {
+      file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', "RESPONSE\n" . json_encode($response) . "\n", FILE_APPEND);
+      $response['report'] = URL_ROOT . 'cache/logs/' . date("Ymd_His", $runtime) . '.log';
+    }
     echo json_encode($response);
     $app->stop();
   });
