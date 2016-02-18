@@ -34,7 +34,10 @@ assets/images/items/*     --->    ROOT/data/products/*
 For banners
 assets/images/banners/*   --->    ROOT/data/banners/*
 
-Also check that ROOT/cache/* have 0777 rights
+Also check that:
+ROOT/cache/* have 0777 rights
+ROOT/install/* removed
+
 
 
 
