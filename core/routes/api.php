@@ -279,74 +279,99 @@
          * Create new order
          */
         case "order":
-          $user = $app->db->getOne($request->data->user_id);
+          $order = $app->db->getOne("SELECT * FROM `users` WHERE user_id = " . $request->data->user_id);
           // Generate main record of order
           $app->db->query("
             INSERT INTO `orders` SET
             order_created  = NOW(),
-            order_client   = '".$user['user_id']."',
-            order_delivery = '{\"type\": \"".$request->data->delivery_type_id."\"}',
-            order_comment  = '".$app->db->esc(strip_tags($request->data->comment))."'
+            order_updated  = NOW(),
+            order_client   = '" . $order['user_id'] . "',
+            order_delivery = '{\"type\": \"" . $request->data->delivery_type_id . "\"}',
+            order_comment  = '" . $app->db->esc(strip_tags($request->data->comment)) . "'
           ");
           // Get order id
-          $order_id = $app->db->getID();
-          $ids = $mail = Array();
+          $order['order_id']    = $app->db->getID();
+          $order['order_cost']  = 0;
+          $order['productlist'] = '';
+          $ids                  = Array();
           foreach ($request->data->products as $key => $value)
-            $ids[$value['id']] = $value['count'];
+            $ids[$value->id] = $value->count;
+          $keys = array_keys($ids);
           // Generate order letter with product list and insert products into database
           $items = $app->db->getAll("
             SELECT *
             FROM `products`
-            WHERE p.product_id IN (".implode(",", array_keys($ids)).") ");
+            WHERE product_id IN (" . implode(",", $keys) . ") ");
           foreach ($items as $item) {
             $item['product_count'] = $ids[$item['product_id']];
-            $item['cart_sum']      = round($item['product_count'] * $item['product_price'], 2);
-            $mail['total']				+= $item['cart_sum'];
-            // TODO сформировать список товаров для письма
-            //$mail['items'] .= $app->view->fetch("mail_order_item", $item);
+            $item['product_cost']  = round($item['product_count'] * $item['product_price'], 2);
+            $order['order_cost'] += $item['product_cost'];
+            $item['product_image'] = rtrim(URL_ROOT, '/') . $app->image->resize(
+                IMAGE_STORAGE . DS . "products" . DS . $item['product_id'] . DS . $item['product_cover'],
+                array(
+                  'w'   => 64,
+                  'h'   => 64,
+                  'far' => 1,
+                ),
+                'email/products'
+              );
             $app->db->query("
               INSERT INTO `lnk_order_products` SET
-              order_id      = '$order_id',
-              product_id    = '".$item['product_id']."',
-              product_count = '".$item['product_count']."',
-              product_price = '".$item['product_price']."'
+              order_id      = '" . $order['order_id'] . "',
+              product_id    = '" . $item['product_id'] . "',
+              product_count = '" . $item['product_count'] . "',
+              product_price = '" . $item['product_price'] . "'
             ");
+            // parsing product list
+            foreach ($item as $key => $value) {
+              $item["{" . $key . "}"] = $value;
+            }
+            $order['productlist'] .= strtr(EMAIL_BODY_ORDER_ITEM, $item);
           }
-          //$delivery = $app->db->getOne("SELECT * FROM `modx_a_delivery` WHERE delivery_id = ".$request->data->delivery_type_id);
-          //$mail['total']        += $delivery['delivery_cost'];
-          //$mail['delivery_cost'] = $delivery['delivery_cost'];
-          //$mail['currency']      = CURRENCY;
-          //$modx->db->query("UPDATE `modx_a_order` SET order_cost = '{$mail[total]}' WHERE order_id = '$order_id'");
-          //$mail['items'] = $modx->parseDocumentSource($mail['items']);
-          //// Send letters to admin and client
-          //$shop->sendMail($user['email'], "order", $mail);
-          //$shop->sendMail($modx->config['emailsender'], "order", $mail);
-          //$response['response_code'] = 0;
+          // get delivery name and price
+          $delivery = $app->db->getOne("SELECT * FROM `delivery` WHERE delivery_id = " . $request->data->delivery_type_id);
+          $order['order_cost'] += $delivery['delivery_cost'];
+          $order['order_delivery'] = $delivery['delivery_name'];
+          $order['brand']          = BRAND;
+          $order['currency']       = CURRENCY;
+          $order                   = array_merge($order, $delivery);
+
+          $app->db->query("UPDATE `orders` SET order_cost = '" . $order['order_cost'] . "' WHERE order_id = '" . $order['order_id'] . "'");
+          $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
+          $response['response_code'] = 0;
           break;
         /**
          * User order history
          */
         case "history":
-          $orders = $app->db->getAll("SELECT * FROM `orders` WHERE order_client = ".(int)$request->data->user_id);
+          $orders = $app->db->getAll("SELECT * FROM `orders` WHERE order_client = " . (int)$request->data->user_id);
           foreach ($orders as $order) {
             switch ($order['order_status']) {
-              case 0: $status = $app->lang->get('Deleted'); break;
-              case 1: $status = $app->lang->get('New'); break;
-              case 2: $status = $app->lang->get('Sent'); break;
-              case 3: $status = $app->lang->get('Delivered'); break;
+              case 0:
+                $status = $app->lang->get('Deleted');
+                break;
+              case 1:
+                $status = $app->lang->get('New');
+                break;
+              case 2:
+                $status = $app->lang->get('Sent');
+                break;
+              case 3:
+                $status = $app->lang->get('Delivered');
+                break;
             }
-            $o = array(
+            $o             = array(
               "date"     => strtotime($order['order_created']),
               "price"    => $order['order_cost'],
               "currency" => "UAH",
-              "status"   => $status
+              "status"   => $status,
             );
             $o['products'] = $app->db->getAll("
               SELECT
                 product_id AS 'id',
                 product_count AS 'count'
               FROM `lnk_order_products`
-              WHERE order_id = ".$order['order_id']);
+              WHERE order_id = " . $order['order_id']);
 
             $response['data']['history_orders'][] = $o;
           }

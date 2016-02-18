@@ -17,7 +17,7 @@
   define('DB_HOST', 'localhost');
   define('DB_USER', 'root');
   define('DB_PASS', '');
-  define('DB_NAME', 'foodnew');
+  define('DB_NAME', 'foodelivery');
 
   // images
   define('IMAGE_STORAGE', ROOT . DS . 'data' );

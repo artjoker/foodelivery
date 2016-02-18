@@ -38,5 +38,5 @@
 
   function protect()
   {
-    //    if (!isset($_SESSION['admin'])) die(header('Location: /'));
+        if (!isset($_SESSION['admin'])) die(header('Location: /'));
   }

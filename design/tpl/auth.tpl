@@ -19,9 +19,15 @@
 
 <div class="container">
 
-  <form class="form-signin" action="/" method="post">
+  <form class="form-signin" autocomplete="off" action="/" method="post">
+    <?php if ('' != $flash['error']): ?>
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong><?php echo $flash['error']?></strong>
+    </div>
+    <?php endif ?>
     <h2 class="form-signin-heading"><?php echo $app->lang->get('Please sign in')?></h2>
-    <input type="email" id="inputEmail" name="auth[email]" class="form-control"
+    <input type="email" id="inputEmail" name="auth[email]" value="<?php echo $flash['email']?>" class="form-control"
            placeholder="<?php echo $app->lang->get('Email address')?>" required autofocus>
     <input type="password" id="inputPassword" name="auth[pass]" class="form-control"
            placeholder="<?php echo $app->lang->get('Password')?>" required>
@@ -30,5 +36,7 @@
   </form>
 
 </div> <!-- /container -->
+<script src="<?php echo URL_JS; ?>jquery-2.2.0.min.js"></script>
+<script src="<?php echo URL_JS; ?>bootstrap.min.js"></script>
 </body>
 </html>

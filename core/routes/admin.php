@@ -610,6 +610,13 @@
       $app->flash("success", $app->lang->get('Delivery type added successfully '));
       $app->redirect('/admin/delivery');
     });
+    /**
+     * Exit admin panel
+     */
+    $app->get('/exit', function() use ($app) {
+      unset($_SESSION['admin']);
+      $app->redirect('/');
+    });
 
   });
 

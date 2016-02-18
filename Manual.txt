@@ -1,0 +1,40 @@
+
+
+                            Foodelivery Admin Panel
+
+
+version 2.0                                                           18.02.2016
+--------------------------------------------------------------------------------
+
+Manual installation
+
+ROOT - is your directory where you unpack zip
+
+Change SQL credentials in file ROOT/core/Config.php
+Replace values in this lines
+
+  define('DB_HOST', '#DATABASE_HOST#');
+  define('DB_USER', '#DATABASE_USER#');
+  define('DB_PASS', '#DATABASE_PASS#');
+  define('DB_NAME', '#DATABASE_BASE#');
+
+If you want to convert your old database to new do next:
+
+1. Backup whole current database!!!
+2. Run in your mysql editor next files
+2.1. ROOT/install/sql/clean.sql    - this script creates new tables
+2.2. ROOT/install/sql/migrate.sql  - this script translate data from old database
+into new tables
+Data which be converted: catalog, products, clients, managers, filters, banners
+Data which not be converted: orders, shops
+
+Moving files
+For product images move
+assets/images/items/*     --->    ROOT/data/products/*
+For banners
+assets/images/banners/*   --->    ROOT/data/banners/*
+
+Also check that ROOT/cache/* have 0777 rights
+
+
+

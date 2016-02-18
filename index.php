@@ -1,10 +1,4 @@
 <?php
-  /**
-   * Created by PhpStorm.
-   * User: c0da
-   * Date: 03.02.2016
-   * Time: 20:34
-   */
 
   define('ROOT', __DIR__);
 

@@ -20,6 +20,7 @@
           $body    = str_replace("{" . $key . "}", $value, $body);
         }
       }
+      file_put_contents(PATH_CACHE . "email.html", $body);
       $mail          = new \PHPMailer();
       $mail->charSet = "UTF-8";
       $mail->IsSMTP();
