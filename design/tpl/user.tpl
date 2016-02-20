@@ -1,7 +1,7 @@
-<form action="/admin/users/<?php echo $user['user_id']?>" method="post">
+<form action="<?php echo URL_ROOT ?>admin/users/<?php echo $user['user_id']?>" method="post">
   <div class="row">
     <div class="col-md-12">
-      <p><a href="/admin/users" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> <?php echo $app->lang->get('Back')?></a></p>
+      <p><a href="<?php echo URL_ROOT ?>admin/users" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> <?php echo $app->lang->get('Back')?></a></p>
     </div>
   </div>
   <div class="row">

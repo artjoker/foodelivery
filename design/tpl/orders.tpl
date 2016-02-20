@@ -1,4 +1,4 @@
-<form action="/admin/orders" method="get">
+<form action="<?php echo URL_ROOT ?>admin/orders" method="get">
   <div class="row">
     <div class="col-md-3">
       <div class="form-group">
@@ -66,8 +66,8 @@
     <td>
       <small><?php echo $order['order_created'] ?></small>
     </td>
-    <td><a href="/admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a></td>
-    <td class="text-right"><a href="/admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
+    <td><a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a></td>
+    <td class="text-right"><a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
     </td>
     <td class="text-right"><b><?php echo $order['order_cost']?></b> <small class="text-muted"><?php echo CURRENCY?></small></td>
     <td class="text-center">
@@ -86,7 +86,7 @@
         lang->get('Yes')?></span><?php endif ?>
     </td>
     <td>
-      <a href="/admin/order/<?php echo $order['order_id']?>" class="btn btn-primary btn-sm">
+      <a href="<?php echo URL_ROOT ?>admin/order/<?php echo $order['order_id']?>" class="btn btn-primary btn-sm">
         <span class="glyphicon glyphicon-info-sign"></span>
         <b><?php echo $app->lang->get('Details')?></b>
       </a>

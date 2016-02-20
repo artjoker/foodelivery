@@ -1,4 +1,4 @@
-<form action="/admin/order/<?php echo $order['order_id']?>" method="post" xmlns="http://www.w3.org/1999/html">
+<form action="<?php echo URL_ROOT ?>admin/order/<?php echo $order['order_id']?>" method="post" xmlns="http://www.w3.org/1999/html">
   <div class="row">
     <div class="col-md-4">
       <h4 class="text-muted"><?php echo $app->lang->get("Client")?></h4>
@@ -124,7 +124,7 @@
               'backend'
               )
             ?>" alt="<?php echo $item['product_name'] ?>" class="img-thumbnail">
-            <a href="/admin/product/<?php echo $item['product_id']?>"
+            <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $item['product_id']?>"
                     target="_blank"><?php echo $item['product_name']?></a></td>
           <td>
             <div class="input-group">
@@ -275,7 +275,7 @@
     })
     $("#category").on("change", function(){
       $.ajax({
-        url:'/admin/ajax/get_category_products',
+        url:'<?php echo URL_ROOT ?>ajax/get_category_products',
         data:{category_id: $(this).val()},
         success:function(_ajax){
           $("#products").html(_ajax);
@@ -286,7 +286,7 @@
     })
     $("#products").on("change", function(){
       $.ajax({
-        url:'/admin/ajax/get_product',
+        url:'<?php echo URL_ROOT ?>ajax/get_product',
         data:{product_id: $(this).val()},
         dataType:'json',
         success:function(_json){

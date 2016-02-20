@@ -7,7 +7,7 @@
     Google Map here
   </div>
   <div class="panel-footer">
-    <form action="/admin/shops" method="post">
+    <form action="<?php echo URL_ROOT ?>admin/shops" method="post">
       <table class="table table-condensed table-bordered table-responsive">
       <thead>
       <tr>

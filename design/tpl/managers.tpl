@@ -26,10 +26,10 @@
       <?php endif ?>
     </td>
     <td class="text-center">
-      <a href="/admin/manager/<?php echo $user['manager_id']?>"
+      <a href="<?php echo URL_ROOT ?>admin/manager/<?php echo $user['manager_id']?>"
          class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span
                 class="glyphicon glyphicon-pencil"></span></a>
-      <a href="/admin/orders?manager=<?php echo $user['manager_id']?>" class="btn btn-sm btn-info"
+      <a href="<?php echo URL_ROOT ?>admin/orders?manager=<?php echo $user['manager_id']?>" class="btn btn-sm btn-info"
          title="<?php echo $app->lang->get('Browse manager orders')?>"><span
                 class="glyphicon glyphicon-shopping-cart"></span> </a>
     </td>

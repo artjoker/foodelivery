@@ -1,6 +1,6 @@
 <?php
 
-  $app->post('/admin/ajax/:get', 'protect', function($get) use ($app) {
+  $app->post('/ajax/:get', 'protect', function($get) use ($app) {
     //    if (!$app->request->isAjax()) die('Bad AJAX request');
     switch ($get) {
       case "product_images":

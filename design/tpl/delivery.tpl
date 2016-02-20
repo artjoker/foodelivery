@@ -1,4 +1,4 @@
-<form action="/admin/delivery" method="post">
+<form action="<?php echo URL_ROOT ?>admin/delivery" method="post">
   <p>
     <a href="#add_delivery" data-toggle="modal" class="btn btn-success"><span
               class="glyphicon glyphicon-plus-sign"></span> <b><?php echo $app->lang->get('Add new delivery')?></b></a>
@@ -50,7 +50,7 @@
                   aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel"><?php echo $app->lang->get('Add new delivery')?></h4>
       </div>
-      <form action="/admin/delivery" method="post">
+      <form action="<?php echo URL_ROOT ?>admin/delivery" method="post">
         <div class="modal-body">
           <div class="form-group">
             <label><?php echo $app->lang->get('Name')?></label>
@@ -92,7 +92,7 @@
     $(".js_delivery_update").on("click", function () {
       _this = $(this);
       $.ajax({
-        url: '/admin/ajax/update_delivery',
+        url: '<?php echo URL_ROOT ?>ajax/update_delivery',
         data: _this.closest("tr").find("input").serialize(),
         success: function () {
           _this.removeClass('btn-primary').addClass('btn-success');

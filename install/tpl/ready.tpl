@@ -4,7 +4,7 @@
       <p>You successfully install new admin panel. Your next steps is:</p>
       <ol>
         <li>Remove <i>install</i> folder <span class="label label-danger">Important!</span></li>
-        <li>Your api host for applications is <b><?php echo HOST ?>/api/</b></li>
+        <li>Your api host for applications is <b><?php echo str_replace('http://', '', HOST) ?></b></li>
         <li>Your login to admin panel is <b>hero@foodeliveryapp.com</b></li>
         <li>Your password to admin panel is <b>youAreHero</b></li>
         <li>Configure your SMTP settings to email works</li>

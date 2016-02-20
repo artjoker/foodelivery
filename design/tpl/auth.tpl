@@ -19,7 +19,7 @@
 
 <div class="container">
 
-  <form class="form-signin" autocomplete="off" action="/" method="post">
+  <form class="form-signin" autocomplete="off" action="<?php echo URL_ROOT ?>" method="post">
     <?php if ('' != $flash['error']): ?>
     <div class="alert alert-danger">
       <button type="button" class="close" data-dismiss="alert">&times;</button>

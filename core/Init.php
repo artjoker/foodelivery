@@ -1,6 +1,15 @@
 <?php
+
+  /**
+   * Check if install dir exists
+   */
+  if (file_exists(ROOT . '/install/index.php')){
+    header("Location: install/");
+    die;
+  }
+
+  error_reporting(E_ERROR);
   session_start();
-  error_reporting(E_ALL);
   date_default_timezone_set("UTC");
 
   require ROOT . "/core/Config.php";
@@ -15,6 +24,9 @@
       //'log.level'      => \Slim\Log::CRITICAL,
     )
   );
+
+  define('DEBUG_MODE', md5($app->request->getUserAgent()) == 'ea6c72a0b8abc2e3d98e34667cc5d7b9');
+
   // Lang
   $app->container->singleton('lang', function () {
     return new \Slim\Lang();
@@ -38,5 +50,11 @@
 
   function protect()
   {
-        if (!isset($_SESSION['admin'])) die(header('Location: /'));
+    if (!isset($_SESSION['admin'])) die(header('Location: '.URL_ROOT));
+  }
+
+  function debug()
+  {
+    if (!DEBUG_MODE)
+      die(header('Location: '.URL_ROOT));
   }

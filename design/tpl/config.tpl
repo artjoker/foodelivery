@@ -1,4 +1,4 @@
-<form action="/admin/config" method="post" autocomplete="off">
+<form action="<?php echo URL_ROOT ?>admin/config" method="post" autocomplete="off">
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#home" role="tab" data-toggle="tab"><?php echo $app->
         lang->get('General')?></a></li>

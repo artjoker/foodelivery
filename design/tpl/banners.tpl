@@ -1,4 +1,4 @@
-<form action="/admin/banners" method="post">
+<form action="<?php echo URL_ROOT ?>admin/banners" method="post">
   <p>
     <a href="#add_banner" data-toggle="modal" class="btn btn-success"><span
               class="glyphicon glyphicon-plus-sign"></span> <b><?php echo $app->
@@ -72,7 +72,7 @@
                   aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel"><?php echo $app->lang->get('Add new banner')?></h4>
       </div>
-      <form action="/admin/banners" enctype="multipart/form-data" method="post">
+      <form action="<?php echo URL_ROOT ?>admin/banners" enctype="multipart/form-data" method="post">
         <div class="modal-body">
           <div class="form-group">
             <label><?php echo $app->lang->get('Image')?></label>
@@ -136,7 +136,7 @@
     $(".js_banner_update").on("click", function(){
       _this = $(this);
       $.ajax({
-        url:'/admin/ajax/update_banner',
+        url:'<?php echo URL_ROOT ?>ajax/update_banner',
         data: _this.closest("tr").find("input,select").serialize(),
         success:function(){
           _this.removeClass('btn-primary').addClass('btn-success');

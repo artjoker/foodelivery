@@ -1,7 +1,7 @@
-<form action="/admin/products" method="get">
+<form action="<?php echo URL_ROOT ?>admin/products" method="get">
   <div class="row">
     <div class="col-md-4">
-      <a href="/admin/product/add" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
+      <a href="<?php echo URL_ROOT ?>admin/product/add" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
         <b><?php echo $app->lang->get('Add new product')?></b></a>
     </div>
     <div class="col-md-3">
@@ -59,7 +59,7 @@
         'backend'
       )
       ?>" alt="<?php echo $product['product_name'] ?>" class="img-thumbnail">
-      <a href="/admin/product/<?php echo $product['product_id'] ?>" target="_blank"><?php echo $product['product_name'] ?></a>
+      <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id'] ?>" target="_blank"><?php echo $product['product_name'] ?></a>
 
     </td>
     <td><?php echo $product['category']?></td>
@@ -76,10 +76,10 @@
       <?php if ($product['product_available'] == 4): ?><span class="label label-info"><?php echo $app->lang->get('Action')?></span><?php endif ?>
     </td>
     <td>
-      <a href="/admin/product/<?php echo $product['product_id']?>" class="btn btn-primary" title="<?php echo $app->lang->get('Edit')?>">
+      <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" class="btn btn-primary" title="<?php echo $app->lang->get('Edit')?>">
         <span class="glyphicon glyphicon-pencil"></span>
       </a>
-      <a href="/admin/product/<?php echo $product['product_id']?>" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger">
+      <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger">
         <span class="glyphicon glyphicon-remove-sign"></span>
       </a>
     </td>
@@ -106,3 +106,4 @@
     </li>
   </ul>
 </nav>
+

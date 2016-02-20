@@ -30,7 +30,7 @@
     </td>
     <td class="text-center">
       <a href="#edit_category" data-edit-category="<?php echo $category['category_id']?>" data-toggle="modal" class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span class="glyphicon glyphicon-pencil"></span></a>
-      <a href="/admin/products?category=<?php echo $category['category_id']?>" class="btn btn-sm btn-info" title="<?php echo $app->lang->get('Browse products in category')?>"><span class="glyphicon glyphicon-briefcase"></span></a>
+      <a href="<?php echo URL_ROOT ?>admin/products?category=<?php echo $category['category_id']?>" class="btn btn-sm btn-info" title="<?php echo $app->lang->get('Browse products in category')?>"><span class="glyphicon glyphicon-briefcase"></span></a>
     </td>
   </tr>
   <?php endforeach ?>
@@ -44,7 +44,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel"><?php echo $app->lang->get('Add new category')?></h4>
       </div>
-      <form action="/admin/catalog" method="post">
+      <form action="<?php echo URL_ROOT ?>admin/catalog" method="post">
         <div class="modal-body">
           <div class="form-group">
             <label><?php echo $app->lang->get('Name')?></label>
@@ -66,7 +66,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel"><?php echo $app->lang->get('Edit category')?></h4>
       </div>
-      <form action="/admin/catalog" method="post">
+      <form action="<?php echo URL_ROOT ?>admin/catalog" method="post">
         <div class="modal-body">
           <div class="form-group">
             <label><?php echo $app->lang->get('Name')?></label>
@@ -98,7 +98,7 @@
   $(document).ready(function(){
     $('#edit_category').on('show.bs.modal', function (e) {
       $.ajax({
-        url:'/admin/ajax/category',
+        url:'<?php echo URL_ROOT ?>ajax/category',
         dataType:'json',
         data: {'category_id' : $(e.relatedTarget).attr("data-edit-category")},
         success:function(_json){

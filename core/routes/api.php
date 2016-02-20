@@ -4,9 +4,8 @@
     date_default_timezone_set('Europe/Kiev');
     $app->response->headers->set('Content-Type', 'application/json');
     $runtime = time();
-    $debug   = md5($app->request->getUserAgent()) == 'ea6c72a0b8abc2e3d98e34667cc5d7b9';
     $request = json_decode(file_get_contents('php://input'));
-    if ($debug) {
+    if (DEBUG_MODE) {
       if (!file_exists(PATH_CACHE . 'logs'))
         mkdir(PATH_CACHE . 'logs');
       file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', "REQUEST\n" . file_get_contents('php://input') . "\n");
@@ -251,7 +250,7 @@
           }
           break;
         /**
-         * Get product info deprecated?
+         * Get product info deprecated
          */
         case "product_info":
           $products = array();
@@ -381,7 +380,7 @@
     // prepare response output
     if (!empty($error))
       $response = array("response_code" => 100, "data" => array("error" => $error));
-    if ($debug) {
+    if (DEBUG_MODE) {
       file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', "RESPONSE\n" . json_encode($response) . "\n", FILE_APPEND);
       $response['report'] = URL_ROOT . 'cache/logs/' . date("Ymd_His", $runtime) . '.log';
     }

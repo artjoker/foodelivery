@@ -1,4 +1,4 @@
-<form action="/admin/product/<?php echo $product['product_id']?>" method="post">
+<form action="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" method="post">
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
       <a href="#tab_general" aria-controls="home" role="tab" data-toggle="tab"><?php echo $app->lang->get('General') ?></a>
@@ -137,7 +137,7 @@
 <script>
   function getProductImages() {
     $.ajax({
-      url: '/admin/ajax/product_images',
+      url: '<?php echo URL_ROOT ?>ajax/product_images',
       data:{'product_id': <?php echo $product['product_id']?>},
       success: function (_ajax) {
         $("#product_images").html(_ajax);
@@ -174,7 +174,7 @@
       if (!confirm("<?php echo $app->lang->get('Are you sure?')?>")) return false;
       var _this = $(this).closest("li");
       $.ajax({
-        url: '/admin/ajax/delete_image',
+        url: '<?php echo URL_ROOT ?>ajax/delete_image',
         data:{'product_id': <?php echo $product['product_id']?>, 'image': _this.find("img").attr("alt")},
         success: function (_ajax) {
           _this.fadeOut().remove();
@@ -184,12 +184,12 @@
 
     // file uploader
     new AjaxUpload($("#uploader"), {
-      action: "/admin/ajax/upload",
+      action: "<?php echo URL_ROOT ?>ajax/upload",
       multiple: true,
       name: "uploader[]",
       data: {
         "size": 2048576,
-        "folder": '<?php echo (int)$product['product_id'] == 0 ? 'tmp' : $product['product_id']?>'
+        "folder": '<?php echo (int)$product['product_id'] ?>'
       },
       onSubmit: function (file, ext) {
         if (!(ext && /^(jpg|png|jpeg|JPG|PNG|JPEG)$/.test(ext))) {

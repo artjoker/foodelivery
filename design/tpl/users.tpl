@@ -1,4 +1,4 @@
-<form action="/admin/users" method="get">
+<form action="<?php echo URL_ROOT ?>admin/users" method="get">
   <div class="row">
     <div class="col-md-3 col-xs-6">
       <div class="form-group">
@@ -48,11 +48,11 @@
       <?php endif ?>
     </td>
     <td class="text-center">
-      <a href="/admin/users/<?php echo $user['user_id']?>"
+      <a href="<?php echo URL_ROOT ?>admin/users/<?php echo $user['user_id']?>"
               class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span
                 class="glyphicon glyphicon-pencil"></span></a>
       <?php if ($user['orders_count'] > 0): ?>
-      <a href="/admin/orders?user=<?php echo $user['user_id']?>" class="btn btn-sm btn-info"
+      <a href="<?php echo URL_ROOT ?>admin/orders?user=<?php echo $user['user_id']?>" class="btn btn-sm btn-info"
               title="<?php echo $app->lang->get('Browse user orders')?>"><span
                 class="glyphicon glyphicon-shopping-cart"></span> <?php echo $user['orders_count']?></a>
       <?php endif ?>

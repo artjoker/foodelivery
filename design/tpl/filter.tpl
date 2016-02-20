@@ -1,4 +1,4 @@
-<form action="/admin/filter/<?php echo $filter['filter_id'] == "" ? 0 : $filter['filter_id']?>" method="post">
+<form action="<?php echo URL_ROOT ?>admin/filter/<?php echo $filter['filter_id'] == "" ? 0 : $filter['filter_id']?>" method="post">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
       <div class="form-group">

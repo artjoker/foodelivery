@@ -7,6 +7,7 @@
 
   require PATH_CORE . "routes/api.php";
   require PATH_CORE . "routes/ajax.php";
+  require PATH_CORE . "routes/debug.php";
   require PATH_CORE . "routes/admin.php";
 
   $app->run();

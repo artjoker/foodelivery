@@ -1,7 +1,7 @@
-<form action="/admin/filters" method="get">
+<form action="<?php echo URL_ROOT ?>admin/filters" method="get">
   <div class="row">
     <div class="col-md-4">
-      <a href="/admin/filter/0" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
+      <a href="<?php echo URL_ROOT ?>admin/filter/0" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
         <b><?php echo $app->lang->get('Add new filter')?></b>
       </a>
     </div>
@@ -47,7 +47,7 @@
       <?php if ($filter['filter_type'] == 2): ?> <span class="label label-success"><?php echo $app->lang->get('OR')?></span><?php endif ?>
       <?php if ($filter['filter_type'] == 3): ?> <span class="label label-danger"><?php echo $app->lang->get('AND')?></span><?php endif ?>
     </td>
-    <td><a href="/admin/filter/<?php echo $filter['filter_id']?>" class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
+    <td><a href="<?php echo URL_ROOT ?>admin/filter/<?php echo $filter['filter_id']?>" class="btn btn-sm btn-primary" title="<?php echo $app->lang->get('Edit')?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
   </tr>
   <?php endforeach ?>
   </tbody>

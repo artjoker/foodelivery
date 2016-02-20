@@ -14,5 +14,7 @@
 <div class="container">
   <?php echo $content ?>
 </div>
+<script src="<?php echo URL?>../design/js/jquery-2.2.0.min.js"></script>
+<script src="<?php echo URL?>../design/js/bootstrap.min.js"></script>
 </body>
 </html>
