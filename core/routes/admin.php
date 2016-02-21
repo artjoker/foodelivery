@@ -18,13 +18,23 @@
      * Order list frontend
      */
     $app->get('/orders', function () use ($app) {
-      $page  = LIMIT * $app->request->get('p');
+      $page = '' != $app->request->get('p') ? $app->request->get('p') : 0;
+      // filters
       $where = array();
-      if ($app->request->get("status") > 0) $where[] = 'order_status = "' . (int)$app->request->get('status') . '"';
-      if ($app->request->get("from") != '') $where[] = 'order_created > "' . (int)$app->request->get('from') . '"';
-      if ($app->request->get("to") != '') $where[] = 'order_created < "' . (int)$app->request->get('to') . '"';
-      if ($app->request->get("user") != '') $where[] = 'order_client = "' . (int)$app->request->get('user') . '"';
-      if ($app->request->get("manager") != '') $where[] = 'order_manager = "' . (int)$app->request->get('manager') . '"';
+      if ($app->request->get("status") > 0)
+        $where[] = 'order_status = "' . (int)$app->request->get('status') . '"';
+      if ($app->request->get("from") != '') {
+        $date    = DateTime::createFromFormat("d.m.Y", $app->request->get('from'));
+        $where[] = 'order_created > "' . $date->format("Y-m-d H:i:s") . '"';
+      }
+      if ($app->request->get("to") != '') {
+        $date    = DateTime::createFromFormat("d.m.Y", $app->request->get('to'));
+        $where[] = 'order_created < "' . $date->format("Y-m-d H:i:s") . '"';
+      }
+      if ($app->request->get("user") != '')
+        $where[] = 'order_client = "' . (int)$app->request->get('user') . '"';
+      if ($app->request->get("manager") != '')
+        $where[] = 'order_manager = "' . (int)$app->request->get('manager') . '"';
       $query  = "
       SELECT
         SQL_CALC_FOUND_ROWS *
@@ -34,14 +44,20 @@
       ORDER BY o.order_id DESC
       LIMIT " . $page . ", " . LIMIT;
       $orders = $app->db->getAll($query);
-      $app->db->getOne("SELECT FOUND_ROWS() AS 'cnt'");
-      // TODO finish pagination for orders
+      // pagination
+      $pages = $app->db->getOne("SELECT FOUND_ROWS() AS 'cnt'");
+      $get   = $app->request->get();
+      unset($get['p']);
+      $params = http_build_query($get);
       $app->view->setData(array(
         "title"   => $app->lang->get('Orders'),
         "menu"    => "order",
         "content" => $app->view->fetch('orders.tpl', array(
           "app"    => $app,
           "orders" => $orders,
+          "pages"  => ceil($pages['cnt'] / LIMIT),
+          "page"   => $page,
+          "params" => $params,
         )),
       ));
     });
@@ -126,7 +142,7 @@
      * Product list frontend
      */
     $app->get('/products', function () use ($app) {
-      $page    = LIMIT * $app->request->get('p');
+      $page    = '' != $app->request->get('p') ? $app->request->get('p') : 0;
       $where   = array();
       $where[] = " p.product_deleted = 0 ";
       // filter by category
@@ -143,7 +159,7 @@
         $where = "WHERE " . implode(" AND ", $where);
       else
         $where = "";
-      $query = "
+      $query    = "
         SELECT
           SQL_CALC_FOUND_ROWS *,
           (SELECT GROUP_CONCAT(category_name) FROM `categories` WHERE category_id IN (SELECT category_id FROM `lnk_products_categories` WHERE product_id = p.product_id)) AS 'category'
@@ -152,8 +168,12 @@
         ORDER BY p.product_updated DESC
         LIMIT " . $page . ", " . LIMIT . "
       ";
-      // TODO pagination
       $products = $app->db->getAll($query);
+      // pagination
+      $pages = $app->db->getOne("SELECT FOUND_ROWS() AS 'cnt'");
+      $get   = $app->request->get();
+      unset($get['p']);
+      $params = http_build_query($get);
       $app->view->setData(array(
         "title"   => $app->lang->get('Products'),
         "menu"    => "product",
@@ -161,6 +181,9 @@
           "app"        => $app,
           "products"   => $products,
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+          "pages"      => ceil($pages['cnt'] / LIMIT),
+          "page"       => $page,
+          "params"     => $params,
         )),
       ));
     });
@@ -238,7 +261,7 @@
         }
         if (0 < count($images))
           foreach ($images as $image) {
-            copy($image, $new_dir.'/'.basename($image));
+            copy($image, $new_dir . '/' . basename($image));
             unlink($image);
           }
       } else {
@@ -515,26 +538,33 @@
      * Users frontend
      */
     $app->get('/users', function () use ($app) {
-      $page  = LIMIT * $app->request->get('p');
+      $page  = '' != $app->request->get('p') ? $app->request->get('p') : 0;
       $query = "
-     SELECT *,
-       (SELECT COUNT(*) FROM `orders` WHERE order_client = user_id) AS 'orders_count'
-     FROM `users`
-     " . ($app->request->get('search') != '' ? "
-     WHERE user_firstname LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
-     OR user_lastname LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
-     OR user_email LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
-     OR user_phone LIKE '%" . $app->db->esc($app->request->get('search')) . "%'" : "") . "
-     ORDER BY user_id DESC
-     LIMIT " . $page . ", " . LIMIT;
-      // TODO pagination
+       SELECT SQL_CALC_FOUND_ROWS *,
+         (SELECT COUNT(*) FROM `orders` WHERE order_client = user_id) AS 'orders_count'
+       FROM `users`
+       " . ($app->request->get('search') != '' ? "
+       WHERE user_firstname LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
+       OR user_lastname LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
+       OR user_email LIKE '%" . $app->db->esc($app->request->get('search')) . "%'
+       OR user_phone LIKE '%" . $app->db->esc($app->request->get('search')) . "%'" : "") . "
+       ORDER BY user_id DESC
+       LIMIT " . $page . ", " . LIMIT;
       $users = $app->db->getAll($query);
+      // pagination
+      $pages = $app->db->getOne("SELECT FOUND_ROWS() AS 'cnt'");
+      $get   = $app->request->get();
+      unset($get['p']);
+      $params = http_build_query($get);
       $app->view->setData(array(
         "title"   => $app->lang->get('Users'),
         "menu"    => "users",
         "content" => $app->view->fetch('users.tpl', array(
-          "app"   => $app,
-          "users" => $users,
+          "app"    => $app,
+          "users"  => $users,
+          "pages"  => ceil($pages['cnt'] / LIMIT),
+          "page"   => $page,
+          "params" => $params,
         )),
       ));
     });
@@ -575,14 +605,11 @@
      * Managers frontend
      */
     $app->get('/managers', function () use ($app) {
-      $page  = LIMIT * $app->request->get('p');
-      $query = "
+      $query    = "
          SELECT m.*,
           (SELECT shop_name FROM `shops` WHERE shop_id = m.shop_id) AS 'shop'
          FROM `managers` m
-         ORDER BY manager_id DESC
-         LIMIT " . $page . ", " . LIMIT;
-      // TODO pagination
+         ORDER BY manager_id DESC";
       $managers = $app->db->getAll($query);
       $app->view->setData(array(
         "title"   => $app->lang->get('Managers'),
@@ -617,14 +644,24 @@
         $app->flash("error", $app->lang->get('Password mismatch'));
         $app->redirect(URL_ROOT . 'admin/managers/' . $id);
       }
-      $app->db->query("UPDATE `managers` SET
-       manager_name = '" . $app->db->esc($user['name']) . "',
-       user_email = '" . $app->db->esc($user['email']) . "',
-       shop_id = '" . (int)$user['shop'] . "',
-       manager_active = '" . (isset($user['active']) ? 1 : 0) . "'
-       " . ($pass != '' ? ", manager_pass = '" . $pass . "'" : "") . "
-       WHERE manager_id = '" . (int)$id . "'
-     ");
+      // create new manager or update existing
+      if ($id > 0)
+        $app->db->query("UPDATE `managers` SET
+         manager_name = '" . $app->db->esc($user['name']) . "',
+         user_email = '" . $app->db->esc($user['email']) . "',
+         shop_id = '" . (int)$user['shop'] . "',
+         manager_active = '" . (isset($user['active']) ? 1 : 0) . "'
+         " . ($pass != '' ? ", manager_pass = '" . $pass . "'" : "") . "
+         WHERE manager_id = '" . (int)$id . "'
+       ");
+      else
+        $app->db->query("INSERT INTO `managers` SET
+         manager_name = '" . $app->db->esc($user['name']) . "',
+         manager_email = '" . $app->db->esc($user['email']) . "',
+         shop_id = '" . (int)$user['shop'] . "',
+         manager_active = '" . (isset($user['active']) ? 1 : 0) . "',
+         manager_pass = '" . $pass . "'
+       ");
       $app->flash("success", $app->lang->get('Manager data successfully updated'));
       $app->redirect(URL_ROOT . 'admin/managers');
     });

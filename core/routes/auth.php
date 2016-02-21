@@ -35,3 +35,31 @@
     }
     $app->stop();
   });
+  /**
+   * Password recovery frontend
+   */
+  $app->get('/recovery', function () use ($app) {
+    $app->render('recovery.tpl', array('app' => $app));
+    $app->stop();
+  });
+  /**
+   * Password recovery backend
+   */
+  $app->post('/recovery', function () use ($app) {
+    $recovery = $app->request->post('recovery');
+    if (MASTER_KEY != $recovery['key']) {
+      $app->flash('error', $app->lang->get('Invalid master key'));
+      $url = URL_ROOT.'recovery';
+    } else {
+      $app->db->query("UPDATE `managers` SET
+      manager_pass = '".md5($recovery['pass'])."',
+      manager_active = 1
+      WHERE manager_id = 1
+      ");
+      $manager = $app->db->getOne("SELECT * FROM `managers` WHERE manager_id = 1");
+      $app->flash("email", $manager['manager_email']);
+      $url = URL_ROOT.'/';
+    }
+    $app->redirect($url);
+    $app->stop();
+  });

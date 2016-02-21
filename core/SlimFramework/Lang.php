@@ -21,9 +21,11 @@
 
     function get ($string)
     {
+      // check if translate exists
       if (in_array($string, array_keys($this->strings)))
         $result = $this->strings[$string];
       else {
+        // if not exist add it to CSV file and return incoming string
         $result = $string;
         if (!in_array($string, $this->unique)) {
           $this->unique[] = $string;

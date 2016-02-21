@@ -2,7 +2,8 @@
   <div class="row">
     <div class="col-md-4">
       <a href="<?php echo URL_ROOT ?>admin/product/add" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
-        <b><?php echo $app->lang->get('Add new product')?></b></a>
+        <b><?php echo $app->lang->get('Add new product')?></b>
+      </a>
     </div>
     <div class="col-md-3">
       <div class="form-group">
@@ -87,23 +88,16 @@
   <?php endforeach ?>
   </tbody>
 </table>
+
 <nav>
   <ul class="pagination">
-    <li>
-      <a href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
+    <?php for($i = 0; $i < $pages; $i++): ?>
+    <li class="<?php echo $i * LIMIT == $page ? "active" : ""?>">
+    <a href="<?php echo URL_ROOT ?>admin/products?p=<?php echo $i * LIMIT?>&<?php echo $params?>">
+      <?php echo $i + 1 ?>
+    </a>
     </li>
-    <li><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li><a href="#">5</a></li>
-    <li>
-      <a href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
+    <?php endfor ?>
   </ul>
 </nav>
 

@@ -15,7 +15,7 @@
       <div class="form-group">
         <div class="input-group dt">
           <input type="text" name="from" placeholder="<?php echo $app->lang->get('Date from')?>"
-                 value="<?php echo $app->request->get('from')?>" class="form-control dt">
+                  value="<?php echo $app->request->get('from')?>" class="form-control dt">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
           </span>
@@ -26,7 +26,7 @@
       <div class="form-group">
         <div class="input-group dt">
           <input type="text" name="to" placeholder="<?php echo $app->lang->get('Date to')?>"
-                 value="<?php echo $app->request->get('to')?>" class="form-control dt">
+                  value="<?php echo $app->request->get('to')?>" class="form-control dt">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
           </span>
@@ -35,8 +35,7 @@
     </div>
     <div class="col-md-2">
       <div class="form-group">
-        <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-filter"></span> <b><?php echo $app->
-            lang->get('Apply filter')?></b></button>
+        <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-filter"></span> <b><?php echo $app->lang->get('Apply filter')?></b></button>
       </div>
     </div>
   </div>
@@ -58,6 +57,11 @@
   </tr>
   </thead>
   <tbody>
+  <?php if (count($orders) == 0): ?>
+  <tr>
+    <td colspan="8" class="text-center"><h3><i><?php echo $app->lang->get('Nothing found')?></i></h3></td>
+  </tr>
+  <?php endif ?>
   <?php foreach ($orders as $order): ?>
   <tr>
     <td>
@@ -66,12 +70,18 @@
     <td>
       <small><?php echo $order['order_created'] ?></small>
     </td>
-    <td><a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a></td>
-    <td class="text-right"><a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
+    <td>
+      <a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a>
     </td>
-    <td class="text-right"><b><?php echo $order['order_cost']?></b> <small class="text-muted"><?php echo CURRENCY?></small></td>
+    <td class="text-right">
+      <a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
+    </td>
+    <td class="text-right"><b><?php echo $order['order_cost']?></b>
+      <small class="text-muted"><?php echo CURRENCY?></small>
+    </td>
     <td class="text-center">
-      <?php if ($order['order_status'] == 0): ?><span class="label label-default"><?php echo $app->lang->get('Deleted') ?></span><?php endif ?>
+      <?php if ($order['order_status'] == 0): ?>
+      <span class="label label-default"><?php echo $app->lang->get('Deleted') ?></span><?php endif ?>
       <?php if ($order['order_status'] == 1): ?><span class="label label-danger"><?php echo $app->
         lang->get('New') ?></span><?php endif ?>
       <?php if ($order['order_status'] == 2): ?><span class="label label-warning"><?php echo $app->
@@ -97,20 +107,12 @@
 </table>
 <nav>
   <ul class="pagination">
-    <li>
-      <a href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li><a href="#">5</a></li>
-    <li>
-      <a href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
+    <?php for($i = 0; $i < $pages; $i++): ?>
+      <li class="<?php echo $i * LIMIT == $page ? "active" : ""?>">
+        <a href="<?php echo URL_ROOT ?>admin/orders?p=<?php echo $i * LIMIT?>&<?php echo $params?>">
+          <?php echo $i + 1 ?>
+        </a>
+      </li>
+    <?php endfor ?>
   </ul>
 </nav>

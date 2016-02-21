@@ -28,7 +28,7 @@
       ));
       file_put_contents($config, $cfg);
       // save secret key
-      file_put_contents(ROOT . "/../core/MasterKey.php", '<?php // Installation datetime '.date("Y-m-d H:i:s")."\n".'define("SESSION_ID", "'.substr(md5(time().uniqid()."Food2.0"), 0, 6).'");'."\n".'define("MASTER_KEY", "'.$_SESSION['secret'].'");');
+      file_put_contents(ROOT . "/../core/MasterKey.php", '<?php define("INSTALL_TIME", "'.date("Y-m-d H:i:s").'");'."\n".'define("SESSION_ID", "'.substr(md5(time().uniqid()."Food2.0"), 0, 6).'");'."\n".'define("MASTER_KEY", "'.$_SESSION['secret'].'");');
       header('Location: '.URL.'?step=done');
       die;
       break;

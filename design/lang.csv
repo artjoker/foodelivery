@@ -172,7 +172,7 @@ Total,Итого
 Notification,Оповещение
 Send email notification to customer,Отправить email уведомление клиенту
 Update order, Обновить заказ
-You really want to remove product from order?,Вы действительно хотите удалить товар из заказа?Order successfully updated,
+You really want to remove product from order?,Вы действительно хотите удалить товар из заказа?
 Order successfully updated, Заказ успешно обновлен
 Choose category, Выберите категорию
 Choose product,Выберите товар
@@ -180,8 +180,16 @@ Add,Добавить
 User data successfully updated,Данные пользователя успешно обновлены
 Filter successfully added,Фильтр успешно добавлен
 Value, Значение
- Invalid format ,
-Product successfully updated,
-Shop list updated,
-Manager not found,
-Invalid password,
+Invalid format ,Неверный формат
+Product successfully updated,Продукт успешно обновлен
+Shop list updated,Список магазинов обновлен
+Manager not found,Менеджер не найден
+Invalid password,Неверный пароль
+Password recovery,Восстановление пароля
+Master key,Мастер ключ
+Send,Отправить
+Invalid master key,Неверный мастер ключ
+Add new manager,Добавить менеджера
+Manager data successfully updated,Данные менеджера обновлены
+Nothing found,Ничего не найдено
+Use master key to recover your password,Для восстановления пароля используйте мастер ключ

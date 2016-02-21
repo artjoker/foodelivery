@@ -61,3 +61,15 @@
   <?php endforeach ?>
   </tbody>
 </table>
+
+<nav>
+  <ul class="pagination">
+    <?php for($i = 0; $i < $pages; $i++): ?>
+    <li class="<?php echo $i * LIMIT == $page ? "active" : ""?>">
+    <a href="<?php echo URL_ROOT ?>admin/orders?p=<?php echo $i * LIMIT?>&<?php echo $params?>">
+      <?php echo $i + 1 ?>
+    </a>
+    </li>
+    <?php endfor ?>
+  </ul>
+</nav>

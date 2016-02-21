@@ -1,3 +1,9 @@
+<p>
+
+  <a href="<?php echo URL_ROOT ?>admin/manager/add" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span>
+    <b><?php echo $app->lang->get('Add new manager')?></b>
+  </a>
+</p>
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
   <thead>
   <tr>

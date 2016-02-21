@@ -4,6 +4,8 @@
   $app->group('/debug', 'debug', function () use ($app) {
 
     $app->get('/', function () use ($app) {
+      if (file_exists(PATH_CORE . 'MasterKey.php'))
+        include PATH_CORE . 'MasterKey.php';
       //if (isset($_SESSION['slim.flash']['ok']))
       //  echo $_SESSION['slim.flash']['ok'];
       $app->view->setData(array(
