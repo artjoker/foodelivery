@@ -91,7 +91,7 @@
     if ($request->signature != md5(json_encode($request->data) . API_KEY))
       $response = array(
         "response_code" => 100,
-        "data"          => array("error" => "Signature doesn't match"),
+        "data"          => array("error" => $app->lang->get("Signature doesn't match")),
       );
     else
       switch ($request->function) {
@@ -133,7 +133,7 @@
           $app->db->query("DELETE FROM `users` WHERE user_email = 'kharkiv.adminko@gmail.com'");
           $check = $app->db->getOne(' SELECT COUNT(*) AS "cnt" FROM `users` WHERE user_email = "' . $app->db->esc($request->data->email) . '" ');
           if ($check['cnt'] > 0) {
-            $error = "User with that email already registered! Try another email";
+            $error = $app->lang->get("User with that email already registered! Try another email");
           } else {
             $password             = substr(md5(uniqid()), 10, 10);
             if ($app->request->data->email == 'user@example.com') $password = 'meganote';
@@ -176,9 +176,9 @@
         case "auth":
           $user = $app->db->getOne("SELECT * FROM `users` WHERE user_email = '" . $app->db->esc($request->data->email) . "'");
           if (0 == count($user))
-            $error = "User with that email not found! Try another email";
+            $error = $app->lang->get("User with that email not found! Try another email");
           elseif ($request->data->pass != $user['user_pass'])
-            $error = "Wrong password";
+            $error = $app->lang->get("Wrong password");
           else {
             $addr     = json_decode($user['user_address'], true);
             $response = Array(
@@ -217,7 +217,7 @@
             );
             $response = array("response_code" => 0);
           } else
-            $error = "Email not registered! Check it";
+            $error = $app->lang->get("Email not registered! Check it");
           break;
         /**
          * User profile update
@@ -231,7 +231,7 @@
             AND user_id != "' . $app->db->esc($request->data->user_id) . '"');
 
           if ($check_email['cnt'] > 0) {
-            $error = "User with that email already registered";
+            $error = $app->lang->get("User with that email already registered");
           } else {
             $addr = json_encode(Array(
               "city"  => $request->data->city,
