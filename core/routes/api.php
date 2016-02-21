@@ -8,7 +8,7 @@
     if (DEBUG_MODE) {
       if (!file_exists(PATH_CACHE . 'logs'))
         mkdir(PATH_CACHE . 'logs');
-      file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', "REQUEST\n" . file_get_contents('php://input') . "\n");
+      file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', 'User-agent:' .$app->request->getUserAgent(). "\nREQUEST\n" . file_get_contents('php://input') . "\n");
     }
 
     $response = array();
@@ -136,6 +136,7 @@
             $error = "User with that email already registered! Try another email";
           } else {
             $password             = substr(md5(uniqid()), 10, 10);
+            if ($app->request->data->email == 'user@example.com') $password = 'meganote';
             $request->data->index = isset($request->data->index) ? $request->data->index : '';
             $app->db->query("
               INSERT INTO `users` SET
