@@ -193,3 +193,6 @@ Add new manager,Добавить менеджера
 Manager data successfully updated,Данные менеджера обновлены
 Nothing found,Ничего не найдено
 Use master key to recover your password,Для восстановления пароля используйте мастер ключ
+ Invalid format , Неверный формат
+Wrong password,Неверный пароль
+User with that email already registered! Try another email,Пользователь с этим адресом уже зарегистрирован! Попробуйте другой email

@@ -113,7 +113,7 @@
         <tbody>
         <?php foreach ($products as $item): ?>
         <tr>
-          <td><img src="<?php echo
+          <td><img src="<?php echo URL_ROOT.
             $app->image->resize(
               IMAGE_STORAGE . DS .'products' . DS . $item['product_id'] . DS . $item['product_cover'],
               array(

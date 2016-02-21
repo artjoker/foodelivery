@@ -130,13 +130,12 @@
          * User registration
          */
         case "reg":
-          $app->db->query("DELETE FROM `users` WHERE user_email = 'kharkiv.adminko@gmail.com'");
           $check = $app->db->getOne(' SELECT COUNT(*) AS "cnt" FROM `users` WHERE user_email = "' . $app->db->esc($request->data->email) . '" ');
           if ($check['cnt'] > 0) {
             $error = $app->lang->get("User with that email already registered! Try another email");
           } else {
             $password             = substr(md5(uniqid()), 10, 10);
-            if ($app->request->data->email == 'user@example.com') $password = 'meganote';
+            if ($request->data->email == 'user@example.com') $password = 'meganote';
             $request->data->index = isset($request->data->index) ? $request->data->index : '';
             $app->db->query("
               INSERT INTO `users` SET
@@ -159,12 +158,13 @@
             $user                  = $app->db->getOne("SELECT * FROM `users` WHERE user_id = " . $user_id);
             $user['brand']         = BRAND;
             $user['user_password'] = $password;
-            $app->mail->send(
-              $request->data->email,
-              EMAIL_SUBJECT_REG,
-              EMAIL_BODY_REG,
-              $user
-            );
+            if (MAIL_HOST != '')
+              $app->mail->send(
+                $request->data->email,
+                EMAIL_SUBJECT_REG,
+                EMAIL_BODY_REG,
+                $user
+              );
 
             $response['response_code']           = 0;
             $response['data']['user']['user_id'] = $user_id;
@@ -209,12 +209,13 @@
             $user                  = $app->db->getOne("SELECT * FROM `users` WHERE user_email = '" . $app->db->esc($request->data->email) . "'");
             $user['brand']         = BRAND;
             $user['user_password'] = $password;
-            $app->mail->send(
-              $user['user_email'],
-              EMAIL_SUBJECT_RECOVERY,
-              EMAIL_BODY_RECOVERY,
-              $user
-            );
+            if (MAIL_HOST != '')
+              $app->mail->send(
+                $user['user_email'],
+                EMAIL_SUBJECT_RECOVERY,
+                EMAIL_BODY_RECOVERY,
+                $user
+              );
             $response = array("response_code" => 0);
           } else
             $error = $app->lang->get("Email not registered! Check it");
@@ -335,9 +336,9 @@
           $order['brand']          = BRAND;
           $order['currency']       = CURRENCY;
           $order                   = array_merge($order, $delivery);
-
           $app->db->query("UPDATE `orders` SET order_cost = '" . $order['order_cost'] . "' WHERE order_id = '" . $order['order_id'] . "'");
-          $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
+          if (MAIL_HOST != '')
+            $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
           $response['response_code'] = 0;
           break;
         /**
