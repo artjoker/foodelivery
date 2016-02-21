@@ -16,6 +16,8 @@ CREATE TABLE `banners` (
   PRIMARY KEY (`banner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `banners` (`banner_id`, `banner_active`, `banner_image`, `banner_position`, `banner_link_type`, `banner_link_id`) VALUES
+(1, 1,  '0011442001442686540.jpg',  1,  1,  1);
 
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
@@ -25,6 +27,9 @@ CREATE TABLE `categories` (
   PRIMARY KEY (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `categories` (`category_id`, `category_name`, `category_active`) VALUES
+(1, 'Soup', 1),
+(2, 'Sushi',  1);
 
 SET NAMES utf8;
 
@@ -84,8 +89,9 @@ CREATE TABLE `managers` (
   `manager_email` varchar(128) NOT NULL,
   `manager_pass` varchar(32) NOT NULL,
   `manager_active` tinyint(4) NOT NULL DEFAULT '1',
-  `shop_id` int(11) NOT NULL,
+  `shop_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`manager_id`),
+  UNIQUE KEY `managers_manager_email_uindex` (`manager_email`),
   KEY `shop_id` (`shop_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -130,6 +136,11 @@ CREATE TABLE `products` (
   UNIQUE KEY `product_code` (`product_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `products` (`product_id`, `product_created`, `product_updated`, `product_code`, `product_visible`, `product_available`, `product_deleted`, `product_name`, `product_price`, `product_intro`, `product_description`, `product_cover`) VALUES
+
+(1, '2014-06-27 14:06:57',  '2016-02-15 20:04:05',  '2',  1,  1,  0,  'Miso soup',  35.95,  'Ingredients: Wakame seaweed, shiitake mushrooms, green onions, miso paste, quail egg, fish broth, sesame seeds, tofu, eel',  '<p>Miso soup</p>', '0781980001403867212.jpg'),
+(2, '2014-06-27 14:26:50',  '0000-00-00 00:00:00',  '7',  1,  1,  0,  'Futomaki', 8.00, '<p>Ingredients: seaweed, shiitake mushrooms, caviar smelt, crab stick, cucumber, eggs, rice, pumpkin</p>', '<p>Lorem ipsum dolor sit amet consectetuer cursus pede pellentesque vitae pretium.</p>\n<p>Tristique mus at elit lobortis libero Sed vestibulum ut eleifend habitasse. Quis Nam Mauris adipiscing Integer ligula dictum sed at enim urna.</p>\n<p>Et scelerisque id et nibh dui tincidunt Curabitur faucibus elit massa. Tincidunt et gravida Phasellus eget parturient faucibus tellus at justo sollicitudin.</p>\n<p>Mi nulla ut adipiscing.</p>', '0334528001403868405.jpg'),
+(3,  '2014-06-27 14:39:13',  '0000-00-00 00:00:00',  '11', 1,  1,  0,  'Salmon', 5.00, '<p>Ingredients: salmon, rice</p>', '<p>Lorem ipsum dolor sit amet consectetuer cursus pede pellentesque vitae pretium.</p>\n<p>Tristique mus at elit lobortis libero Sed vestibulum ut eleifend habitasse. Quis Nam Mauris adipiscing Integer ligula dictum sed at enim urna.</p>\n<p>Et scelerisque id et nibh dui tincidunt Curabitur faucibus elit massa. Tincidunt et gravida Phasellus eget parturient faucibus tellus at justo sollicitudin.</p>\n<p>Mi nulla ut adipiscing.</p>', '0533448001403869148.jpg');
 
 DROP TABLE IF EXISTS `shops`;
 CREATE TABLE `shops` (
@@ -197,6 +208,11 @@ CREATE TABLE `lnk_products_categories` (
   CONSTRAINT `lnk_products_categories_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
   CONSTRAINT `lnk_products_categories_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `lnk_products_categories` (`product_id`, `category_id`) VALUES
+(1,  1),
+(2,  2),
+(3,  1);
 
 
 DROP TABLE IF EXISTS `lnk_products_values`;
