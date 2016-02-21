@@ -49,7 +49,7 @@
       <small class="text-muted"><?php echo $product['product_id']?></small>
     </td>
     <td>
-      <img src="<?php echo
+      <img src="<?php echo URL_ROOT .
       $app->image->resize(
         IMAGE_STORAGE . DS ."products" . DS . $product['product_id'] . DS . $product['product_cover'],
         array(

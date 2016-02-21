@@ -25,6 +25,6 @@
 
 
   // api config
-  define('API_KEY', md5($_SERVER['SERVER_NAME'] . "Artjoker"));
+  define('API_KEY', md5(rtrim(str_replace('http://', '', URL_ROOT), '/') . "Artjoker"));
 
   //error_reporting(E_ERROR);

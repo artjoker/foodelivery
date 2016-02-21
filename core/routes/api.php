@@ -82,7 +82,7 @@
       fwrite($bd, json_encode($response));
       fclose($bd);
       // prepare response
-      $response = array('response_code' => 0, 'data' => array("path" => "/cache/" . $file . ".json"));
+      $response = array('response_code' => 0, 'data' => array("path" => URL_ROOT . "cache/" . $file . ".json"));
       echo json_encode($response);
       $app->stop();
     }
