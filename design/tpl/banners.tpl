@@ -18,7 +18,7 @@
     <?php foreach($banners as $banner): ?>
     <tr>
       <td>
-        <img src="<?php echo $app->image->resize(
+        <img src="<?php echo URL_ROOT . $app->image->resize(
         IMAGE_STORAGE . DS . 'banners' . DS . $banner['banner_image'],
         array( 'w' => 256, 'h' => 128, 'zc' => 1 ),
         'backend'

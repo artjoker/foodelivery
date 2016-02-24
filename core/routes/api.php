@@ -79,10 +79,10 @@
         JOIN `filters` f ON f.filter_id = pv.filter_id");
       // write json file
       $bd = fopen(PATH_CACHE . $file . ".json", "w");
-      fwrite($bd, json_encode($response));
+      fwrite($bd, json_encode(array("data" => $response)));
       fclose($bd);
       // prepare response
-      $response = array('response_code' => 0, 'data' => array("path" => URL_ROOT . "cache/" . $file . ".json"));
+      $response = array('response_code' => 0, 'data' => array("path" =>  "/cache/" . $file . ".json"));
       echo json_encode($response);
       $app->stop();
     }
@@ -219,6 +219,20 @@
             $response = array("response_code" => 0);
           } else
             $error = $app->lang->get("Email not registered! Check it");
+          break;
+        /**
+         * Change user password
+         */
+
+        case "change_password":
+          $user = $app->db->getOne("SELECT * FROM `users` WHERE user_id = ".(int)$request->data->user_id);
+          if ($user['user_id'] == "")
+            $error = $app->lang->get("User with this ID doesn't exist");
+          elseif ($request->data->old_password == $user['user_pass']) {
+            $app->db->query("update `users` set user_pass = '".$app->db->esc($request->data->new_password)."' WHERE user_id = ".$user['user_id']);
+            $response = array("response_code" => 0);
+          } else
+            $error = $app->lang->get("Invalid password");
           break;
         /**
          * User profile update
