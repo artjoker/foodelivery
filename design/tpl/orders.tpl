@@ -71,10 +71,10 @@
       <small><?php echo $order['order_created'] ?></small>
     </td>
     <td>
-      <a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a>
+      <a href="<?php echo URL_ROOT ?>admin/users/<?php echo $order['order_client']?>"><?php echo $order['user_firstname'] ." ".$order['user_lastname']?></a>
     </td>
     <td class="text-right">
-      <a href="<?php echo URL_ROOT ?>admin/client/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
+      <a href="<?php echo URL_ROOT ?>admin/users/<?php echo $order['order_client']?>"><?php echo $order['user_email']?></a>
     </td>
     <td class="text-right"><b><?php echo $order['order_cost']?></b>
       <small class="text-muted"><?php echo CURRENCY?></small>

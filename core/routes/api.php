@@ -2,13 +2,14 @@
 
   $app->post('/api/', function () use ($app) {
     date_default_timezone_set('Europe/Kiev');
+    define('API_LOG', PATH_CACHE . 'logs' . DS . 'api.log');
     $app->response->headers->set('Content-Type', 'application/json');
     $runtime = time();
     $request = json_decode(file_get_contents('php://input'));
     if (DEBUG_MODE) {
       if (!file_exists(PATH_CACHE . 'logs'))
         mkdir(PATH_CACHE . 'logs');
-      file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', 'User-agent:' .$app->request->getUserAgent(). "\nREQUEST\n" . file_get_contents('php://input') . "\n");
+      file_put_contents(API_LOG, 'User-agent:' .$app->request->getUserAgent(). "\n".date("Ymd_His", $runtime)."\nREQUEST\n" . file_get_contents('php://input') . "\n", FILE_APPEND);
     }
 
     $response = array();
@@ -223,7 +224,6 @@
         /**
          * Change user password
          */
-
         case "change_password":
           $user = $app->db->getOne("SELECT * FROM `users` WHERE user_id = ".(int)$request->data->user_id);
           if ($user['user_id'] == "")
@@ -351,8 +351,14 @@
           $order['currency']       = CURRENCY;
           $order                   = array_merge($order, $delivery);
           $app->db->query("UPDATE `orders` SET order_cost = '" . $order['order_cost'] . "' WHERE order_id = '" . $order['order_id'] . "'");
-          if (MAIL_HOST != '')
+          $managers = $app->db->getAll("SELECT manager_email FROM `managers` WHERE manager_active = 1");
+
+          if (MAIL_HOST != '') {
+             foreach ($managers as $value) {
+               $app->mail->send($managers[0]['manager_email'], $app->lang->get('New order'), EMAIL_BODY_ORDER, $order);
+             }
             $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
+          }
           $response['response_code'] = 0;
           break;
         /**
@@ -397,7 +403,7 @@
     if (!empty($error))
       $response = array("response_code" => 100, "data" => array("error" => $error));
     if (DEBUG_MODE) {
-      file_put_contents(PATH_CACHE . 'logs' . DS . date("Ymd_His", $runtime) . '.log', "RESPONSE\n" . json_encode($response) . "\n", FILE_APPEND);
+      file_put_contents(API_LOG, "RESPONSE\n" . json_encode($response) . "\n", FILE_APPEND);
       $response['report'] = URL_ROOT . 'cache/logs/' . date("Ymd_His", $runtime) . '.log';
     }
     echo json_encode($response);

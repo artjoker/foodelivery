@@ -64,11 +64,13 @@
               <?php endforeach ?>
             </select>
           </div>
+          <!--
           <div class="form-group">
             <label><?php echo $app->lang->get('Intro')?></label>
         <textarea name="product[intro]" id="intro" class="form-control"
                 rows="3"><?php echo $product['product_intro']?></textarea>
           </div>
+          -->
         </div>
         <div class="col-md-7">
           <label><?php echo $app->lang->get('Images')?></label>
@@ -83,7 +85,7 @@
           <div class="form-group">
             <label><?php echo $app->lang->get('Description')?></label>
         <textarea name="product[description]" id="description" class="form-control"
-                rows="20"><?php echo $product['product_name']?></textarea>
+                rows="20"><?php echo $product['product_description']?></textarea>
           </div>
         </div>
       </div>
