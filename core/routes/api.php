@@ -1,15 +1,21 @@
 <?php
 
   $app->post('/api/', function () use ($app) {
+    error_reporting(E_ALL);
     date_default_timezone_set('Europe/Kiev');
-    define('API_LOG', PATH_CACHE . 'logs' . DS . 'api.log');
     $app->response->headers->set('Content-Type', 'application/json');
     $runtime = time();
-    $request = json_decode(file_get_contents('php://input'));
+    $request = json_decode($app->request->getBody());
+    
     if (DEBUG_MODE) {
       if (!file_exists(PATH_CACHE . 'logs'))
-        mkdir(PATH_CACHE . 'logs');
-      file_put_contents(API_LOG, 'User-agent:' .$app->request->getUserAgent(). "\n".date("Ymd_His", $runtime)."\nREQUEST\n" . file_get_contents('php://input') . "\n", FILE_APPEND);
+        mkdir(PATH_CACHE . 'logs');     
+      file_put_contents(PATH_CACHE . 'logs' . DS . 'api.log', 
+        "\n\n".date("Y-m-d H:i:s")."\n".
+        'User-agent:' .$app->request->getUserAgent(). 
+        "\nREQUEST\n" . 
+        $app->request->getBody() . "\n"
+      , FILE_APPEND);
     }
 
     $response = array();
@@ -37,7 +43,8 @@
 					product_visible AS 'visible',
 					product_deleted AS 'deleted'
 				FROM `products` p
-				WHERE product_visible = 1 " . ($dt > 0 ? " AND product_updated > '" . date("Y-m-d H:i:s", $dt) . "'" : "");
+				WHERE " . ($dt > 0 ? " product_updated > '" . date("Y-m-d H:i:s", $dt) . "'" : " product_visible = 1");
+        // die($query);
       $response['products'] = $app->db->getAll($query);
       foreach ($response['products'] as $key => $product) {
         $values = $app->db->getAll("SELECT category_id FROM `lnk_products_categories` WHERE product_id = " . $product['id']);
@@ -52,7 +59,7 @@
       /**
        * Delivery
        */
-      $response['delivery_types'] = $app->db->getAll("SELECT delivery_id AS 'id', delivery_name AS 'name', delivery_cost AS 'cost' FROM `delivery`");
+      $response['delivery_types'] = $app->db->getAll("SELECT delivery_id AS 'id', delivery_name AS 'name', delivery_cost AS 'cost' FROM `delivery` WHERE delivery_active = 1");
       /**
        *  Filters
        */
@@ -70,11 +77,12 @@
       /**
        * Filter values
        */
+      //IF (f.filter_type = 2, IF(v.value_id = 1, 0, 1) ,v.number)
       $response['filter_values'] = $app->db->getAll("
         SELECT
           v.value_id AS 'filter_value_id',
           IF (f.filter_type = 3, v.string, v.number) AS 'filter_value',
-          IF (f.filter_type = 3, 'str', 'int')AS 'filter_type'
+          IF (f.filter_type = 1, 'int', 'str')AS 'filter_type'
         FROM `values` v
         JOIN `lnk_products_values` pv ON pv.value_id = v.value_id
         JOIN `filters` f ON f.filter_id = pv.filter_id");
@@ -89,7 +97,13 @@
     }
 
     // check signature
-    if ($request->signature != md5(json_encode($request->data) . API_KEY))
+
+    $unescaped = preg_replace_callback('/\\\\u(\w{4})/', function ($matches) {
+        return html_entity_decode('&#x' . $matches[1] . ';', ENT_COMPAT, 'UTF-8');
+    }, json_encode($request->data));
+    $SIGN = md5($unescaped . API_KEY);
+
+    if ($request->signature != $SIGN)
       $response = array(
         "response_code" => 100,
         "data"          => array("error" => $app->lang->get("Signature doesn't match")),
@@ -187,16 +201,16 @@
               "data"          => array(
                 "user" =>
                   array(
-                    "user_id" => $user['user_id'],
-                    "surname" => $user['user_lastname'],
-                    "name"    => $user['user_firstname'],
-                    "email"   => $user['user_email'],
-                    "phone"   => $user['user_phone'],
-                    "index"   => $addr['index'],
-                    "city"    => $addr['city'],
-                    "street"  => $addr['ave'],
-                    "house"   => $addr['house'],
-                    "flat"    => $addr['room'],
+                    "user_id"      => $user['user_id'],
+                    "surname"      => $user['user_lastname'],
+                    "name"         => $user['user_firstname'],
+                    "email"        => $user['user_email'],
+                    "phone"        => $user['user_phone'],
+                    "index"        => $addr['index'],
+                    "city"         => $addr['city'],
+                    "street"       => $addr['ave'],
+                    "house_number" => $addr['house'],
+                    "room_number"  => $addr['room'],
                   )));
           }
           break;
@@ -224,6 +238,7 @@
         /**
          * Change user password
          */
+
         case "change_password":
           $user = $app->db->getOne("SELECT * FROM `users` WHERE user_id = ".(int)$request->data->user_id);
           if ($user['user_id'] == "")
@@ -352,11 +367,10 @@
           $order                   = array_merge($order, $delivery);
           $app->db->query("UPDATE `orders` SET order_cost = '" . $order['order_cost'] . "' WHERE order_id = '" . $order['order_id'] . "'");
           $managers = $app->db->getAll("SELECT manager_email FROM `managers` WHERE manager_active = 1");
-
-          if (MAIL_HOST != '') {
-             foreach ($managers as $value) {
-               $app->mail->send($managers[0]['manager_email'], $app->lang->get('New order'), EMAIL_BODY_ORDER, $order);
-             }
+          if (MAIL_HOST != ''){
+            foreach ($managers as $value) {
+              $app->mail->send($value['manager_email'], $app->lang->get('New order'), EMAIL_BODY_ORDER, $order);
+            }
             $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
           }
           $response['response_code'] = 0;
@@ -403,8 +417,8 @@
     if (!empty($error))
       $response = array("response_code" => 100, "data" => array("error" => $error));
     if (DEBUG_MODE) {
-      file_put_contents(API_LOG, "RESPONSE\n" . json_encode($response) . "\n", FILE_APPEND);
-      $response['report'] = URL_ROOT . 'cache/logs/' . date("Ymd_His", $runtime) . '.log';
+      file_put_contents(PATH_CACHE . 'logs' . DS .  'api.log', "SERVER SIGNATURE = ".$SIGN."\nRESPONSE\n" . json_encode($response) . "\n\n", FILE_APPEND);
+      // $response['report'] = URL_ROOT . 'cache/logs/' . date("Ymd_His", $runtime) . '.log';
     }
     echo json_encode($response);
     $app->stop();

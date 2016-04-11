@@ -12,24 +12,28 @@
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="tab_general">
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-4">
           <div class="form-group">
             <label><?php echo $app->lang->get('Name')?></label>
             <input type="text" name="product[name]" value="<?php echo $product['product_name']?>" required
                     class="form-control">
           </div>
-          <div class="form-group">
-            <label><?php echo $app->lang->get('Code')?>
-              <span class="label label-danger"><?php echo $app->lang->get('Must be unique!')?></span></label>
-            <input type="text" name="product[code]" value="<?php echo $product['product_code']?>" required
-                    class="form-control">
-          </div>
-          <div class="form-group">
-            <label><?php echo $app->lang->get('Price')?></label>
-            <div class="input-group">
-              <input type="text" name="product[price]" value="<?php echo $product['product_price']?>" required
-                      class="form-control">
-              <span class="input-group-addon"><?php echo CURRENCY?></span>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label><?php echo $app->lang->get('Code')?>
+                  <span class="label label-danger"><?php echo $app->lang->get('Must be unique!')?></span></label>
+                <input type="text" name="product[code]" value="<?php echo $product['product_code']?>" required class="form-control">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label><?php echo $app->lang->get('Price')?></label>
+                <div class="input-group">
+                  <input type="text" name="product[price]" value="<?php echo $product['product_price']?>" required class="form-control">
+                  <span class="input-group-addon"><?php echo CURRENCY?></span>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row">
@@ -64,15 +68,13 @@
               <?php endforeach ?>
             </select>
           </div>
-          <!--
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label><?php echo $app->lang->get('Intro')?></label>
         <textarea name="product[intro]" id="intro" class="form-control"
                 rows="3"><?php echo $product['product_intro']?></textarea>
-          </div>
-          -->
+          </div> -->
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
           <label><?php echo $app->lang->get('Images')?></label>
           <a href="#" class="btn btn-xs pull-right btn-success" id="uploader"><span class="glyphicon glyphicon-picture"></span>
             <b><?php echo $app->lang->get('Upload images')?></b></a>
@@ -109,7 +111,8 @@
               <input type="number" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" value="<?php echo $filter['value']?>" class="form-control">
               <?php endif?>
               <?php if ($filter['filter_type'] == 2): ?>
-              <input type="checkbox" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" <?php echo ($filter['value'] == 1 ? "checked" : "") ?> value="yes" class="make-switch">
+              <input type="checkbox" <?php echo ($filter['value'] == 1 ? "checked" : "") ?> value="yes" class="make-switch js_linked">
+              <input type="hidden" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" value="<?php echo ($filter['value'] == 1 ? "yes" : "no") ?>" class="js_with">
               <?php endif?>
               <?php if ($filter['filter_type'] == 3): ?>
                 <input type="text" name="filter[<?php echo $filter['filter_type']."|".$filter['filter_id']?>]" value="<?php echo $filter['value']?>" class="form-control">
@@ -182,6 +185,11 @@
           _this.fadeOut().remove();
         }
       })
+    })
+
+    // OR filter
+    $(".js_linked").on("switchChange.bootstrapSwitch", function(e,s){
+      $(this).parents("td").find(".js_with").val(s ? "yes" : "no");
     })
 
     // file uploader

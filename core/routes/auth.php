@@ -25,6 +25,10 @@
         $app->flash("error", $app->lang->get('Manager not found'));
         $app->redirect(URL_ROOT .'/');
       }
+      if ($manager['manager_active'] == 0) {
+        $app->flash("error", $app->lang->get('This account disabled'));
+        $app->redirect(URL_ROOT .'/');
+      }
       if ($manager['manager_pass'] != md5($auth['pass'])) {
         $app->flash("email", filter_var($auth['email'], FILTER_SANITIZE_EMAIL));
         $app->flash("error", $app->lang->get('Invalid password'));

@@ -72,13 +72,16 @@
       JOIN `users` u ON u.user_id = o.order_client
       WHERE o.order_id = '" . $app->db->esc($id) . "'";
       $order = $app->db->getOne($query);
+      $delivery = json_decode($order['order_delivery'], true);
+      if (!isset($delivery['index']))
+        $delivery = array_merge($delivery, json_decode($order['user_address'], true));
       $app->view->setData(array(
         "title"   => "# " . $order['order_id'] . " " . $app->lang->get('order details'),
         "menu"    => "order",
         "content" => $app->view->fetch('order.tpl', array(
           "app"        => $app,
           "order"      => $order,
-          "delivery"   => json_decode($order['order_client'] != '' ? $order['user_address'] : $order['order_delivery'], true),
+          "delivery"   => $delivery,
           "shipping"   => $app->db->getAll("SELECT * FROM `delivery` ORDER BY delivery_name DESC"),
           "managers"   => $app->db->getAll("SELECT * FROM `managers` ORDER BY manager_name ASC"),
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
@@ -268,6 +271,7 @@
         $id = (int)$id;
         $app->db->query("
           UPDATE `products` SET
+            product_updated = NOW(),
             product_name = '" . $app->db->esc($product['name']) . "',
             product_code = '" . $app->db->esc($product['code']) . "',
             product_price = '" . $app->db->esc($product['price']) . "',
@@ -288,6 +292,7 @@
             category_id = '" . (int)$item . "'");
       // update filters
       $app->db->query("DELETE FROM `lnk_products_values` WHERE product_id = '$id'");
+
       if (0 < count($app->request->post('filter')))
         foreach ($app->request->post('filter') as $key => $value) {
           list($type, $fid) = explode("|", $key);
@@ -302,7 +307,7 @@
                 $vid = $uniq['value_id'];
               break;
             case 2: // OR
-              $vid = ($value != '' ? 2 : 1);
+              $vid = ($value == 'yes' ? 2 : 1);
               break;
             case 3: // AND
               $uniq = $app->db->getOne("SELECT value_id FROM `values` WHERE string = '" . $app->db->esc($value) . "'");
@@ -648,7 +653,7 @@
       if ($id > 0)
         $app->db->query("UPDATE `managers` SET
          manager_name = '" . $app->db->esc($user['name']) . "',
-         user_email = '" . $app->db->esc($user['email']) . "',
+         manager_email = '" . $app->db->esc($user['email']) . "',
          shop_id = '" . (int)$user['shop'] . "',
          manager_active = '" . (isset($user['active']) ? 1 : 0) . "'
          " . ($pass != '' ? ", manager_pass = '" . $pass . "'" : "") . "

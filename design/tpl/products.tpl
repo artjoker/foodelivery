@@ -39,7 +39,7 @@
     <th width="70px"><?php echo $app->lang->get('Price')?></th>
     <th width="70px"><?php echo $app->lang->get('Available')?></th>
     <th width="70px"><?php echo $app->lang->get('Status')?></th>
-    <th width="100px"></th>
+    <th width="50px"></th>
   </tr>
   </thead>
   <tbody>
@@ -80,9 +80,9 @@
       <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" class="btn btn-primary" title="<?php echo $app->lang->get('Edit')?>">
         <span class="glyphicon glyphicon-pencil"></span>
       </a>
-      <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger">
+      <!-- <a href="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" title="<?php echo $app->lang->get('Remove')?>" class="btn btn-danger">
         <span class="glyphicon glyphicon-remove-sign"></span>
-      </a>
+      </a> -->
     </td>
   </tr>
   <?php endforeach ?>

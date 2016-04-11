@@ -29,8 +29,7 @@
       </td>
       <td>
         <input type="checkbox" value="yes"
-               name="delivery[<?php echo $del['delivery_id']?>][active]" <?php echo $del['delivery_active'] == 1 ? "checked" : "" ?>
-        >
+               name="delivery[<?php echo $del['delivery_id']?>][active]" <?php echo $del['delivery_active'] == 1 ? "checked" : "" ?> class="make-switch" >
       </td>
       <td>
         <a href="#" class="btn btn-primary btn-block js_delivery_update"><span

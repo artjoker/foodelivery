@@ -1,8 +1,14 @@
 <form action="<?php echo URL_ROOT ?>admin/config" method="post" autocomplete="off">
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#home" role="tab" data-toggle="tab"><?php echo $app->
-        lang->get('General')?></a></li>
-    <li role="presentation"><a href="#email" role="tab" data-toggle="tab"><?php echo $app->lang->get('Email templates')?></a></li>
+    <li role="presentation" class="active">
+      <a href="#home" role="tab" data-toggle="tab"><?php echo $app->
+        lang->get('General')?>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#email" role="tab" data-toggle="tab"><?php echo $app->lang->get('Email templates')?>
+      </a>
+    </li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -16,89 +22,104 @@
           </div>
           <div class="form-group">
             <a href="/design/lang.csv" target="_blank" class="btn btn-xs btn-info pull-right"><b><?php echo $app->
-                lang->get('Modify translate')?></b></a>
-            <label><?php echo $app->lang->get('Language') ?></label>
-            <input type="text" name="lang" value="<?php echo LANG?>" class="form-control">
-          </div>
-          <div class="form-group">
-            <label><?php echo $app->lang->get('Page limit in backend') ?></label>
-            <input type="number" name="limit" value="<?php echo LIMIT?>" class="form-control">
-          </div>
-          <div class="form-group">
-            <label><?php echo $app->lang->get('Google Map API') ?></label>
-            <input type="text" name="gmap_key" value="<?php echo GMAP_KEY?>" class="form-control">
-          </div>
-          <div class="form-group">
-            <label><?php echo $app->lang->get('Currency') ?></label>
-            <input type="text" name="currency" value="<?php echo CURRENCY ?>" class="form-control">
-          </div>
-        </div>
-        <div class="col-md-6 col-sm-6">
-          <h4><?php echo $app->lang->get('SMTP configuration')?></h4>
-          <div class="row">
-            <div class="col-md-10">
-              <div class="form-group">
-                <label><?php echo $app->lang->get('Host')?></label>
-                <input type="text" name="mail_host" value="<?php echo MAIL_HOST?>" class="form-control">
-              </div>
+              lang->get('Modify translate')?></b></a>
+              <label><?php echo $app->lang->get('Language') ?></label>
+              <input type="text" name="lang" value="<?php echo LANG?>" class="form-control">
             </div>
-            <div class="col-md-2">
-              <div class="form-group">
-                <label><?php echo $app->lang->get('Port')?></label>
-                <input type="number" name="mail_port" value="<?php echo MAIL_PORT?>" class="form-control">
-              </div>
+            <div class="form-group">
+              <label><?php echo $app->lang->get('Page limit in backend') ?></label>
+              <input type="number" name="limit" value="<?php echo LIMIT?>" class="form-control">
+            </div>
+            <div class="form-group">
+              <label><?php echo $app->lang->get('Google Map API') ?></label>
+              <input type="text" name="gmap_key" value="<?php echo GMAP_KEY?>" class="form-control">
+            </div>
+            <div class="form-group">
+              <label><?php echo $app->lang->get('Currency') ?></label>
+              <input type="text" name="currency" value="<?php echo CURRENCY ?>" class="form-control">
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label><?php echo $app->lang->get('User')?></label>
-                <input type="text" name="mail_user" value="<?php echo MAIL_USER?>" class="form-control">
+          <div class="col-md-6 col-sm-6">
+            <h4><?php echo $app->lang->get('Email configuration')?></h4>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Method')?></label>
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default  <?php echo MAIL_TYPE == 'sendmail' ? "active" : "" ?>">
+                      <input type="radio" name="mail_type" value="sendmail" autocomplete="off" <?php echo MAIL_TYPE == 'sendmail' ? "checked" : "" ?>> SendMail
+                    </label>
+                    <label class="btn btn-default  <?php echo MAIL_TYPE == 'smtp' ? "active" : "" ?>">
+                    <input type="radio" name="mail_type" value="smtp" autocomplete="off" <?php echo MAIL_TYPE == 'smtp' ? "checked" : "" ?>> SMTP
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label><?php echo $app->lang->get('Password')?></label>
-                <input type="password" name="mail_pass" value="<?php echo MAIL_PASS?>" class="form-control">
+            <div class="row">
+              <div class="col-md-10">
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Host')?></label>
+                  <input type="text" name="mail_host" value="<?php echo MAIL_HOST?>" class="form-control">
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Port')?></label>
+                  <input type="number" name="mail_port" value="<?php echo MAIL_PORT?>" class="form-control">
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label><?php echo $app->lang->get('Secure')?></label>
-            <br>
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default  <?php echo MAIL_SECURE == '' ? "active" : "" ?>">
-                <input type="radio" name="mail_secure" value="" autocomplete="off" <?php echo MAIL_SECURE == '' ? "checked" : "" ?>> None
-              </label>
-              <label class="btn btn-default  <?php echo MAIL_SECURE == 'ssl' ? "active" : "" ?>">
-                <input type="radio" name="mail_secure" value="ssl" autocomplete="off" <?php echo MAIL_SECURE == 'ssl' ? "checked" : "" ?>> SSL
-              </label>
-              <label class="btn btn-default  <?php echo MAIL_SECURE == 'tls' ? "active" : "" ?>">
-                <input type="radio" name="mail_secure" value="tls" autocomplete="off" <?php echo MAIL_SECURE == 'tls' ? "checked" : "" ?>> TLS
-              </label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('User')?></label>
+                  <input type="text" name="mail_user" value="<?php echo MAIL_USER?>" class="form-control">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Password')?></label>
+                  <input type="password" name="mail_pass" value="<?php echo MAIL_PASS?>" class="form-control">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label><?php echo $app->lang->get('Secure')?></label>
+              <br>
+              <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-default  <?php echo MAIL_SECURE == '' ? "active" : "" ?>">
+                  <input type="radio" name="mail_secure" value="" autocomplete="off" <?php echo MAIL_SECURE == '' ? "checked" : "" ?>> None
+                </label>
+                <label class="btn btn-default  <?php echo MAIL_SECURE == 'ssl' ? "active" : "" ?>">
+                  <input type="radio" name="mail_secure" value="ssl" autocomplete="off" <?php echo MAIL_SECURE == 'ssl' ? "checked" : "" ?>> SSL
+                </label>
+                <label class="btn btn-default  <?php echo MAIL_SECURE == 'tls' ? "active" : "" ?>">
+                  <input type="radio" name="mail_secure" value="tls" autocomplete="off" <?php echo MAIL_SECURE == 'tls' ? "checked" : "" ?>> TLS
+                </label>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div role="tabpanel" class="tab-pane" id="email">
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            <a href="#template_help" data-toggle="modal" class="btn btn-info pull-right"><span class="glyphicon glyphicon-info-sign"></span> <b><?php echo $app->lang->get('Email templates placeholders')?></b></a>
-          </p>
+      <div role="tabpanel" class="tab-pane" id="email">
+        <div class="row">
+          <div class="col-md-12">
+            <p>
+              <a href="#template_help" data-toggle="modal" class="btn btn-info pull-right"><span class="glyphicon glyphicon-info-sign"></span> <b><?php echo $app->lang->get('Email templates placeholders')?></b></a>
+            </p>
+          </div>
         </div>
-      </div>
-      <div class="clearfix"><br></div>
-      <div class="row">
-        <div class="col-md-12">
-          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="clearfix"><br></div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="headingOne">
-                <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true"
-                     aria-controls="collapseOne">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true"
+                    aria-controls="collapseOne">
                     <?php echo $app->lang->get('Registration template') ?>
                   </a>
                 </h4>
@@ -130,7 +151,7 @@
                   <div class="form-group">
                     <label><?php echo $app->lang->get('Subject')?></label>
                     <input type="text" name="email_subject_recovery" value="<?php echo EMAIL_SUBJECT_RECOVERY?>"
-                           class="form-control">
+                    class="form-control">
                   </div>
                   <div class="form-group">
                     <label><?php echo $app->lang->get('HTML body')?></label>
@@ -144,62 +165,62 @@
               <div class="panel-heading" role="tab" id="headingThree">
                 <h4 class="panel-title">
                   <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"
-                     aria-expanded="true">
-                    <?php echo $app->lang->get('Order template') ?>
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseThree" class="panel-collapse collapse " role="tabpanel">
-                <div class="panel-body">
-                  <div class="form-group">
-                    <label><?php echo $app->lang->get('Subject')?></label>
-                    <input type="text" name="email_subject_order" value="<?php echo EMAIL_SUBJECT_ORDER?>"
-                           class="form-control">
-                  </div>
-                  <div class="form-group">
-                    <label><?php echo $app->lang->get('Order HTML body')?></label>
-                    <textarea name="email_body_order" rows="20"><?php echo EMAIL_BODY_ORDER?></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label><?php echo $app->lang->get('Item HTML')?></label>
-                    <textarea name="email_body_order_item" rows="20"><?php echo EMAIL_BODY_ORDER_ITEM?></textarea>
-                  </div>
+                  aria-expanded="true">
+                  <?php echo $app->lang->get('Order template') ?>
+                </a>
+              </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse " role="tabpanel">
+              <div class="panel-body">
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Subject')?></label>
+                  <input type="text" name="email_subject_order" value="<?php echo EMAIL_SUBJECT_ORDER?>"
+                  class="form-control">
+                </div>
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Order HTML body')?></label>
+                  <textarea name="email_body_order" rows="20"><?php echo EMAIL_BODY_ORDER?></textarea>
+                </div>
+                <div class="form-group">
+                  <label><?php echo $app->lang->get('Item HTML')?></label>
+                  <textarea name="email_body_order_item" rows="20"><?php echo EMAIL_BODY_ORDER_ITEM?></textarea>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="headingFour">
-                <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour"
-                     aria-expanded="true">
-                    <?php echo $app->lang->get('Order change template') ?>
-                  </a>
-                </h4>
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingFour">
+              <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour"
+                aria-expanded="true">
+                <?php echo $app->lang->get('Order change template') ?>
+              </a>
+            </h4>
+          </div>
+          <div id="collapseFour" class="panel-collapse collapse " role="tabpanel">
+            <div class="panel-body">
+              <div class="form-group">
+                <label><?php echo $app->lang->get('Subject')?></label>
+                <input type="text" name="email_subject_order_change" value="<?php echo EMAIL_SUBJECT_ORDER_CHANGE?>"
+                class="form-control">
               </div>
-              <div id="collapseFour" class="panel-collapse collapse " role="tabpanel">
-                <div class="panel-body">
-                  <div class="form-group">
-                    <label><?php echo $app->lang->get('Subject')?></label>
-                    <input type="text" name="email_subject_order_change" value="<?php echo EMAIL_SUBJECT_ORDER_CHANGE?>"
-                           class="form-control">
-                  </div>
-                  <div class="form-group">
-                    <label><?php echo $app->lang->get('HTML body')?></label>
-                    <textarea name="email_body_order_change" rows="20"><?php echo EMAIL_BODY_ORDER_CHANGE?></textarea>
-                  </div>
-                </div>
+              <div class="form-group">
+                <label><?php echo $app->lang->get('HTML body')?></label>
+                <textarea name="email_body_order_change" rows="20"><?php echo EMAIL_BODY_ORDER_CHANGE?></textarea>
               </div>
             </div>
-
           </div>
         </div>
+
       </div>
     </div>
   </div>
-  <br>
-  <button type="submit" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-save"></span>
-    <b><?php echo $app->lang->get('Save')?></b></button>
+</div>
+</div>
+<br>
+<button type="submit" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-save"></span>
+  <b><?php echo $app->lang->get('Save')?></b></button>
 </form>
 
 <div class="modal fade" id="template_help" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -271,9 +292,9 @@
       selector: 'textarea',
       height: 200,
       plugins: [
-        'advlist autolink lists link image charmap print preview anchor',
-        'searchreplace visualblocks code fullscreen',
-        'insertdatetime media table contextmenu paste code'
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table contextmenu paste code'
       ],
       language: '<?php echo LANG?>',
       a_plugin_option: true,

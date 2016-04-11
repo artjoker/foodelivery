@@ -1,9 +1,8 @@
 <form action="<?php echo URL_ROOT ?>admin/banners" method="post">
   <p>
-    <a href="#add_banner" data-toggle="modal" class="btn btn-success">
-      <span class="glyphicon glyphicon-plus-sign"></span>
-      <b><?php echo $app->lang->get('Add new banner')?></b>
-    </a>
+    <a href="#add_banner" data-toggle="modal" class="btn btn-success"><span
+              class="glyphicon glyphicon-plus-sign"></span> <b><?php echo $app->
+        lang->get('Add new banner')?></b></a>
   </p>
   <table class="table table-bordered table-condensed">
     <thead>

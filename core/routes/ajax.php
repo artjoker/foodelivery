@@ -54,7 +54,7 @@
         break;
       case "get_product":
         $product = $app->db->getOne("SELECT product_id, product_name, product_cover, product_price, product_intro FROM `products` WHERE product_id = '".(int)$app->request->post('product_id')."'");
-        $product['product_image'] = $app->image->resize(IMAGE_STORAGE . DS ."products" . DS . $product['product_id'] . DS . $product['product_cover'], array('w' => 64, 'h' => 64, 'far' => 1), 'backend');
+        $product['product_image'] = URL_ROOT . $app->image->resize(IMAGE_STORAGE . DS ."products" . DS . $product['product_id'] . DS . $product['product_cover'], array('w' => 64, 'h' => 64, 'far' => 1), 'backend');
         echo json_encode($product);
         break;
     }

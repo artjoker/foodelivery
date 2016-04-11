@@ -309,6 +309,7 @@
         row.find("[name*='id']").val(_product.product_id);
 
         $("#items tbody").append(row.clone());
+        calcOrder();
         $("#add_order_product").modal('hide');
       }
       return false;

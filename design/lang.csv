@@ -193,6 +193,16 @@ Add new manager,Добавить менеджера
 Manager data successfully updated,Данные менеджера обновлены
 Nothing found,Ничего не найдено
 Use master key to recover your password,Для восстановления пароля используйте мастер ключ
- Invalid format , Неверный формат
+ Invalid format ,Неверный формат
 Wrong password,Неверный пароль
-User with that email already registered! Try another email,Пользователь с этим адресом уже зарегистрирован! Попробуйте другой email
+User with that email already registered! Try another email,Пользователь с таким email уже зарегистрирован
+User with that email not found! Try another email,Пользователь с таким email не найден
+Email not registered! Check it,Почта не зарегистированна! Проверьте
+Banner successfully uploaded,Баннер загружен
+Category successfully added to catalog,Категория добавлена в каталог
+Category successfully updated,Категория обновлена
+New order,Новый заказ
+Signature doesn't match,Подпись неверна
+Email configuration,Настройки почты
+Method of sending messages,Метод отправки сообщений
+Method,Метод
