@@ -14,10 +14,10 @@
   define('URL_JS', URL_ROOT . "design/js/");
 
   // database config
-  define('DB_HOST', 'localhost');
-  define('DB_USER', 'root');
-  define('DB_PASS', '');
-  define('DB_NAME', 'foodnew');
+  define('DB_HOST', '#DATABASE_HOST#');
+  define('DB_USER', '#DATABASE_USER#');
+  define('DB_PASS', '#DATABASE_PASS#');
+  define('DB_NAME', '#DATABASE_BASE#');
 
   // images
   define('IMAGE_STORAGE', ROOT . DS . 'data' );
