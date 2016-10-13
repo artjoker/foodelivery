@@ -46,4 +46,15 @@
       return $this->db->affected_rows;
     }
 
+    /**
+     * Fix encoding
+     */
+    function fix ($var) {
+      $encoding = mb_detect_encoding ($var, 'CP1252, ISO-8859-1, UTF-8', true);
+      if (IOS || $encoding == 'ISO-8859-1') {
+          $res = mb_convert_encoding($var, 'CP1252', 'UTF-8');
+      } 
+      return $var;
+    }
+
   }

@@ -24,6 +24,8 @@
    * @author  Chris Ryan
    * @author  Marcus Bointon <phpmailer@synchromedia.co.uk>
    */
+  if (!class_exists('SMTP')) {
+   
   class SMTP
   {
     /**
@@ -1211,4 +1213,5 @@
     {
       $this->Timeout = $timeout;
     }
+  } 
   }

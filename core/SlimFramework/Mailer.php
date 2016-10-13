@@ -13,6 +13,7 @@
 
     function send ($to, $subject, $body, $ph = array())
     {
+      error_reporting(E_ALL);
       // replace ph in body
       if (0 < count($ph)) {
         foreach ($ph as $key => $value) {
@@ -20,7 +21,7 @@
           $body    = str_replace("{" . $key . "}", $value, $body);
         }
       }
-      file_put_contents(PATH_CACHE . "email.html", $body);
+      // file_put_contents(PATH_CACHE . "email.html", $body);
       $mail          = new \PHPMailer();
       $mail->charSet = "UTF-8";
       $mail->IsSMTP();

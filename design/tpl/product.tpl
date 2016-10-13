@@ -1,4 +1,4 @@
-<form action="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" method="post">
+<form action="<?php echo URL_ROOT ?>admin/product/<?php echo $product['product_id']?>" autocomplete="off" id="js_frm_product" method="post">
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
       <a href="#tab_general" aria-controls="home" role="tab" data-toggle="tab"><?php echo $app->lang->get('General') ?></a>
@@ -19,14 +19,14 @@
                     class="form-control">
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-6">
               <div class="form-group">
                 <label><?php echo $app->lang->get('Code')?>
                   <span class="label label-danger"><?php echo $app->lang->get('Must be unique!')?></span></label>
-                <input type="text" name="product[code]" value="<?php echo $product['product_code']?>" required class="form-control">
+                <input type="text" id="js_unique" name="product[code]" value="<?php echo $product['product_code']?>" required class="form-control">
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-6">
               <div class="form-group">
                 <label><?php echo $app->lang->get('Price')?></label>
                 <div class="input-group">
@@ -37,7 +37,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-6">
               <div class="form-group">
                 <label><?php echo $app->lang->get('Available')?></label>
                 <br>
@@ -45,7 +45,7 @@
                         value="yes" <?php if ($product['product_visible']) echo "checked" ?> class="make-switch">
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-6">
               <div class="form-group">
                 <label><?php echo $app->lang->get('Status')?></label>
                 <select name="product[status]" data-active="<?php echo $product['product_available']?>"
@@ -140,6 +140,7 @@
 <script src="<?php echo URL_JS; ?>tinymce/tinymce.min.js"></script>
 <script src="<?php echo URL_JS; ?>ajaxupload.js"></script>
 <script>
+  var _is_valid_form = true;
   function getProductImages() {
     $.ajax({
       url: '<?php echo URL_ROOT ?>ajax/product_images',
@@ -165,6 +166,16 @@
       a_configuration_option: 400
     });
     getProductImages();
+
+    // check product code unique
+    $("#js_unique").on("keyup", function () {
+      var _base = <?=$existcodes?>;
+      if (_base.indexOf($(this).val()) < 0)
+        $(this).closest(".form-group").addClass("has-success").removeClass("has-error");
+      else
+        $(this).closest(".form-group").removeClass("has-success").addClass("has-error");
+      _is_valid_form = (_base.indexOf($(this).val()) < 0);
+    })
 
     // set product cover
     $("#product_images").on("click", ".js_product_set_cover", function () {
@@ -211,5 +222,9 @@
         getProductImages();
       }
     });
+
+    $("#js_frm_product").on("submit",function () {
+      return _is_valid_form;
+    })
   })
 </script>

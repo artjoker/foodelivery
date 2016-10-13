@@ -5,7 +5,7 @@
       <table class="table table-bordered table-condensed">
         <tr>
           <th width="120px"><?php echo $app->lang->get("Client name")?></th>
-          <td><?php echo $order['user_firstname']?> <?php echo $order['user_firstname']?></td>
+          <td><?php echo $order['user_firstname']?> <?php echo $order['user_lastname']?></td>
         </tr>
         <tr>
           <th>Email</th>

@@ -8,7 +8,6 @@
 
   require PATH_ROUTE . "auth.php";
 
-
   $app->group('/admin', 'protect', function () use ($app) {
 
     $app->get('/', function () use ($app) {
@@ -194,6 +193,10 @@
      * Add new product frontend
      */
     $app->get('/product/add', function () use ($app) {
+      $codes = array_values($app->db->getAll("SELECT product_code FROM `products`"));
+      $exist = array();
+      foreach ($codes as $code) 
+        $exist[] = $code['product_code'];
       $app->view->setData(array(
         "title"   => $app->lang->get('Add new product'),
         "menu"    => "product",
@@ -201,6 +204,7 @@
           "app"        => $app,
           "product"    => array("product_id" => 0),
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+          "existcodes" => json_encode($exist)
         )),
       ));
     });
@@ -208,6 +212,10 @@
      * One product frontend
      */
     $app->get('/product/:id', function ($id) use ($app) {
+      $codes = array_values($app->db->getAll("SELECT product_code FROM `products`"));
+      $exist = array();
+      foreach ($codes as $code) 
+        $exist[] = $code['product_code'];
       $query   = "
       SELECT
          *,
@@ -232,6 +240,7 @@
           "product"    => $product,
           "filters"    => $app->db->getAll($filters),
           "categories" => $app->db->getAll("SELECT * FROM `categories` ORDER BY category_name ASC"),
+          "existcodes" => json_encode($exist)
         )),
       ));
     });

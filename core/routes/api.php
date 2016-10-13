@@ -2,19 +2,29 @@
 
   $app->post('/api/', function () use ($app) {
     error_reporting(E_ALL);
+    define('IOS', strpos($app->request->getUserAgent(), 'iPhone') > 0);
     date_default_timezone_set('Europe/Kiev');
+
     $app->response->headers->set('Content-Type', 'application/json');
     $runtime = time();
     $request = json_decode($app->request->getBody());
-    
-    if (DEBUG_MODE) {
-      if (!file_exists(PATH_CACHE . 'logs'))
-        mkdir(PATH_CACHE . 'logs');     
-      file_put_contents(PATH_CACHE . 'logs' . DS . 'api.log', 
+
+    // check signature
+    $unescaped = preg_replace_callback('/\\\\u(\w{4})/', function ($matches) {
+        return html_entity_decode('&#x' . $matches[1] . ';', ENT_COMPAT, 'UTF-8');
+    }, json_encode($request->data));
+
+    $request = json_decode(urldecode($app->request->getBody()));
+
+    $SIGN = md5($unescaped . API_KEY);
+
+    if (DEBUG_MODE) { 
+      file_put_contents(PATH_CACHE . 'logs' . DS . 'request.log', 
         "\n\n".date("Y-m-d H:i:s")."\n".
         'User-agent:' .$app->request->getUserAgent(). 
         "\nREQUEST\n" . 
-        $app->request->getBody() . "\n"
+        $app->request->getBody() . "\n".
+        "SERVER SIGNATURE = ".$SIGN
       , FILE_APPEND);
     }
 
@@ -96,12 +106,6 @@
       $app->stop();
     }
 
-    // check signature
-
-    $unescaped = preg_replace_callback('/\\\\u(\w{4})/', function ($matches) {
-        return html_entity_decode('&#x' . $matches[1] . ';', ENT_COMPAT, 'UTF-8');
-    }, json_encode($request->data));
-    $SIGN = md5($unescaped . API_KEY);
 
     if ($request->signature != $SIGN)
       $response = array(
@@ -152,22 +156,23 @@
             $password             = substr(md5(uniqid()), 10, 10);
             if ($request->data->email == 'user@example.com') $password = 'meganote';
             $request->data->index = isset($request->data->index) ? $request->data->index : '';
+
             $app->db->query("
               INSERT INTO `users` SET
                 user_reg_date = NOW(),
                 user_last_visit = NOW(),
-                user_email = '" . $app->db->esc($request->data->email) . "',
-                user_phone = '" . $app->db->esc($request->data->phone) . "',
-                user_firstname = '" . $app->db->esc($request->data->name) . "',
-                user_lastname = '" . $app->db->esc($request->data->surname) . "',
+                user_email = '" . $app->db->esc($app->db->fix($request->data->email)) . "',
+                user_phone = '" . $app->db->esc($app->db->fix($request->data->phone)) . "',
+                user_firstname = '" . $app->db->esc($app->db->fix($request->data->name)) . "',
+                user_lastname = '" . $app->db->esc($app->db->fix($request->data->surname)) . "',
                 user_pass = '" . md5($password) . "',
                 user_address = '" . $app->db->esc(
                 json_encode(array(
-                  "index" => $request->data->index,
-                  "city"  => $request->data->city,
-                  "ave"   => $request->data->street,
-                  "house" => $request->data->house_number,
-                  "room"  => $request->data->room_number,
+                  "index" => $app->db->fix($request->data->index),
+                  "city"  => $app->db->fix($request->data->city),
+                  "ave"   => $app->db->fix($request->data->street),
+                  "house" => $app->db->fix($request->data->house_number),
+                  "room"  => $app->db->fix($request->data->room_number),
                 ))) . "' ");
             $user_id               = $app->db->getID();
             $user                  = $app->db->getOne("SELECT * FROM `users` WHERE user_id = " . $user_id);
@@ -194,6 +199,8 @@
             $error = $app->lang->get("User with that email not found! Try another email");
           elseif ($request->data->pass != $user['user_pass'])
             $error = $app->lang->get("Wrong password");
+          elseif (0 == $user['user_active'])
+            $error = $app->lang->get("User blocked");
           else {
             $addr     = json_decode($user['user_address'], true);
             $response = Array(
@@ -255,7 +262,7 @@
         case "update_user":
           $check_email = $app->db->getOne('
             SELECT
-            COUNT(*) AS "cnt"
+              COUNT(*) AS "cnt"
             FROM `users`
             WHERE user_email = "' . $app->db->esc($request->data->email) . '"
             AND user_id != "' . $app->db->esc($request->data->user_id) . '"');
@@ -264,19 +271,19 @@
             $error = $app->lang->get("User with that email already registered");
           } else {
             $addr = json_encode(Array(
-              "city"  => $request->data->city,
-              "ave"   => $request->data->street,
-              "house" => $request->data->house_number,
-              "room"  => $request->data->room_number,
-              "index" => $request->data->index,
+              "city"  => $app->db->fix($request->data->city),
+              "ave"   => $app->db->fix($request->data->street),
+              "house" => $app->db->fix($request->data->house_number),
+              "room"  => $app->db->fix($request->data->room_number),
+              "index" => $app->db->fix($request->data->index),
             ));
             $app->db->query("UPDATE `users` SET
-              user_firstname = '" . $app->db->esc($request->data->name) . "',
-              user_lastname = '" . $app->db->esc($request->data->surname) . "',
-              user_phone = '" . $app->db->esc($request->data->phone) . "',
-              user_email = '" . $app->db->esc($request->data->email) . "',
-              user_address = '" . $app->db->esc($addr) . "'
-              WHERE user_id = '" . $app->db->esc($request->data->user_id) . "}'");
+              user_firstname = '" . $app->db->esc($app->db->fix($request->data->name)) . "',
+              user_lastname  = '" . $app->db->esc($app->db->fix($request->data->surname)) . "',
+              user_phone     = '" . $app->db->esc($app->db->fix($request->data->phone)) . "',
+              user_email     = '" . $app->db->esc($app->db->fix($request->data->email)) . "',
+              user_address   = '" . $app->db->esc($addr) . "'
+              WHERE user_id  = '" . $app->db->esc($request->data->user_id) . "'");
             $response = array("response_code" => 0);
           }
           break;
@@ -309,71 +316,78 @@
          * Create new order
          */
         case "order":
+          // get user
           $order = $app->db->getOne("SELECT * FROM `users` WHERE user_id = " . $request->data->user_id);
-          // Generate main record of order
-          $app->db->query("
-            INSERT INTO `orders` SET
-            order_created  = NOW(),
-            order_updated  = NOW(),
-            order_client   = '" . $order['user_id'] . "',
-            order_delivery = '{\"type\": \"" . $request->data->delivery_type_id . "\"}',
-            order_comment  = '" . $app->db->esc(strip_tags($request->data->comment)) . "'
-          ");
-          // Get order id
-          $order['order_id']    = $app->db->getID();
-          $order['order_cost']  = 0;
-          $order['productlist'] = '';
-          $ids                  = Array();
+          // get products id
+          $ids = Array();
           foreach ($request->data->products as $key => $value)
             $ids[$value->id] = $value->count;
-          $keys = array_keys($ids);
-          // Generate order letter with product list and insert products into database
-          $items = $app->db->getAll("
-            SELECT *
-            FROM `products`
-            WHERE product_id IN (" . implode(",", $keys) . ") ");
-          foreach ($items as $item) {
-            $item['product_count'] = $ids[$item['product_id']];
-            $item['product_cost']  = round($item['product_count'] * $item['product_price'], 2);
-            $order['order_cost'] += $item['product_cost'];
-            $item['product_image'] = rtrim(URL_ROOT, '/') . $app->image->resize(
-                IMAGE_STORAGE . DS . "products" . DS . $item['product_id'] . DS . $item['product_cover'],
-                array(
-                  'w'   => 64,
-                  'h'   => 64,
-                  'far' => 1,
-                ),
-                'email/products'
-              );
+          $keys  = array_keys($ids);
+          $check = $app->db->getOne("SELECT MIN(product_visible) AS 'min' FROM `products` WHERE product_id IN (" . implode(",", $keys) . ") ");
+          if ($check['min'] == 0) {
+            $error = $app->lang->get('You ordered unavailable item');
+          } else {
+            // Generate main record of order
             $app->db->query("
-              INSERT INTO `lnk_order_products` SET
-              order_id      = '" . $order['order_id'] . "',
-              product_id    = '" . $item['product_id'] . "',
-              product_count = '" . $item['product_count'] . "',
-              product_price = '" . $item['product_price'] . "'
+              INSERT INTO `orders` SET
+              order_created  = NOW(),
+              order_updated  = NOW(),
+              order_client   = '" . $order['user_id'] . "',
+              order_delivery = '{\"type\": \"" . $request->data->delivery_type_id . "\"}',
+              order_comment  = '" . $app->db->esc($app->db->fix(strip_tags($request->data->comment))) . "'
             ");
-            // parsing product list
-            foreach ($item as $key => $value) {
-              $item["{" . $key . "}"] = $value;
+            // Get order id
+            $order['order_id']    = $app->db->getID();
+            $order['order_cost']  = 0;
+            $order['productlist'] = '';
+            // Generate order letter with product list and insert products into database
+            $items = $app->db->getAll("
+              SELECT *
+              FROM `products`
+              WHERE product_id IN (" . implode(",", $keys) . ") ");
+            foreach ($items as $item) {
+              $item['product_count'] = $ids[$item['product_id']];
+              $item['product_cost']  = round($item['product_count'] * $item['product_price'], 2);
+              $order['order_cost'] += $item['product_cost'];
+              $item['product_image'] = rtrim(URL_ROOT, '/') . $app->image->resize(
+                  IMAGE_STORAGE . DS . "products" . DS . $item['product_id'] . DS . $item['product_cover'],
+                  array(
+                    'w'   => 64,
+                    'h'   => 64,
+                    'far' => 1,
+                  ),
+                  'email/products'
+                );
+              $app->db->query("
+                INSERT INTO `lnk_order_products` SET
+                order_id      = '" . $order['order_id'] . "',
+                product_id    = '" . $item['product_id'] . "',
+                product_count = '" . $item['product_count'] . "',
+                product_price = '" . $item['product_price'] . "'
+              ");
+              // parsing product list
+              foreach ($item as $key => $value) {
+                $item["{" . $key . "}"] = $value;
+              }
+              $order['productlist'] .= strtr(EMAIL_BODY_ORDER_ITEM, $item);
             }
-            $order['productlist'] .= strtr(EMAIL_BODY_ORDER_ITEM, $item);
-          }
-          // get delivery name and price
-          $delivery = $app->db->getOne("SELECT * FROM `delivery` WHERE delivery_id = " . $request->data->delivery_type_id);
-          $order['order_cost'] += $delivery['delivery_cost'];
-          $order['order_delivery'] = $delivery['delivery_name'];
-          $order['brand']          = BRAND;
-          $order['currency']       = CURRENCY;
-          $order                   = array_merge($order, $delivery);
-          $app->db->query("UPDATE `orders` SET order_cost = '" . $order['order_cost'] . "' WHERE order_id = '" . $order['order_id'] . "'");
-          $managers = $app->db->getAll("SELECT manager_email FROM `managers` WHERE manager_active = 1");
-          if (MAIL_HOST != ''){
-            foreach ($managers as $value) {
-              $app->mail->send($value['manager_email'], $app->lang->get('New order'), EMAIL_BODY_ORDER, $order);
+            // get delivery name and price
+            $delivery = $app->db->getOne("SELECT * FROM `delivery` WHERE delivery_id = " . $request->data->delivery_type_id);
+            $order['order_cost'] += $delivery['delivery_cost'];
+            $order['order_delivery'] = $delivery['delivery_name'];
+            $order['brand']          = BRAND;
+            $order['currency']       = CURRENCY;
+            $order                   = array_merge($order, $delivery);
+            $app->db->query("UPDATE `orders` SET order_cost = '" . $order['order_cost'] . "' WHERE order_id = '" . $order['order_id'] . "'");
+            $managers = $app->db->getAll("SELECT manager_email FROM `managers` WHERE manager_active = 1");
+            if (MAIL_HOST != ''){
+              foreach ($managers as $value) {
+                $app->mail->send($value['manager_email'], $app->lang->get('New order'), EMAIL_BODY_ORDER, $order);
+              }
+              $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
             }
-            $app->mail->send($order['user_email'], EMAIL_SUBJECT_ORDER, EMAIL_BODY_ORDER, $order);
+            $response['response_code'] = 0;
           }
-          $response['response_code'] = 0;
           break;
         /**
          * User order history
@@ -403,10 +417,11 @@
             );
             $o['products'] = $app->db->getAll("
               SELECT
-                product_id AS 'id',
-                product_count AS 'count'
-              FROM `lnk_order_products`
-              WHERE order_id = " . $order['order_id']);
+                p.product_id AS 'id',
+                p.product_count AS 'count',
+                (SELECT product_name FROM `products` WHERE product_id = p.product_id) AS 'name'
+              FROM `lnk_order_products` p
+              WHERE p.order_id = " . $order['order_id']);
 
             $response['data']['history_orders'][] = $o;
           }
@@ -417,7 +432,7 @@
     if (!empty($error))
       $response = array("response_code" => 100, "data" => array("error" => $error));
     if (DEBUG_MODE) {
-      file_put_contents(PATH_CACHE . 'logs' . DS .  'api.log', "SERVER SIGNATURE = ".$SIGN."\nRESPONSE\n" . json_encode($response) . "\n\n", FILE_APPEND);
+      file_put_contents(PATH_CACHE . 'logs' . DS .  'response.log', "SERVER SIGNATURE = ".$SIGN."\nRESPONSE\n" . json_encode($response) . "\n\n", FILE_APPEND);
       // $response['report'] = URL_ROOT . 'cache/logs/' . date("Ymd_His", $runtime) . '.log';
     }
     echo json_encode($response);

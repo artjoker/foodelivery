@@ -13,6 +13,7 @@
   date_default_timezone_set("UTC");
 
   require ROOT . "/core/Config.php";
+  require ROOT . "/core/MasterKey.php";
 
   require PATH_CORE . "SlimFramework/Slim.php";
 
